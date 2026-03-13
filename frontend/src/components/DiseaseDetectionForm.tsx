@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Upload, Loader } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
+import { useLanguage } from '../context/LanguageContext'
 
 interface DiseaseDetectionFormProps {
   onSubmit: (image: File) => Promise<void>
@@ -8,6 +9,7 @@ interface DiseaseDetectionFormProps {
 }
 
 const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) => {
+  const { t } = useLanguage()
   const themeClasses = useThemeClasses()
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -27,7 +29,7 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!imageFile) {
-      alert('Please upload a plant image for disease detection')
+      alert(t('disease.alertUpload'))
       return
     }
     await onSubmit(imageFile)
@@ -40,7 +42,7 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
           {/* Image Upload */}
           <div>
             <label className={`block text-sm font-medium mb-4 text-center ${themeClasses.text.primary}`}>
-              Upload Plant Image
+              {t('disease.uploadTitle')}
             </label>
             <div className={`border-2 border-dashed ${themeClasses.border} rounded-lg p-8 text-center cursor-pointer hover:border-green-500 transition-colors`}>
               <input
@@ -55,17 +57,17 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
                 {imagePreview ? (
                   <div className="space-y-4">
                     <img src={imagePreview} alt="Preview" className="w-full max-h-96 object-contain rounded-lg" />
-                    <p className={`text-sm ${themeClasses.text.secondary}`}>Click here to change image</p>
+                    <p className={`text-sm ${themeClasses.text.secondary}`}>{t('disease.clickToChange')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4 py-8">
                     <Upload className={`mx-auto ${themeClasses.text.secondary}`} size={48} />
                     <div className="space-y-2">
                       <p className={`text-lg font-medium ${themeClasses.text.primary}`}>
-                        Click to upload or drag and drop
+                        {t('disease.clickToUpload')}
                       </p>
                       <p className={`text-sm ${themeClasses.text.secondary}`}>
-                        PNG, JPG, GIF up to 10MB
+                        {t('disease.imageFormats')}
                       </p>
                     </div>
                   </div>
@@ -85,10 +87,10 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
             {loading ? (
               <>
                 <Loader size={20} className="animate-spin" />
-                Analyzing...
+                {t('disease.analyzing')}
               </>
             ) : (
-              'Detect Disease'
+              t('disease.detectButton')
             )}
           </button>
         </div>

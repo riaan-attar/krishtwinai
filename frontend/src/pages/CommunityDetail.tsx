@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import CreatePostModal from '../components/CreatePostModal'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 
 interface CommunityData {
   id: string
@@ -34,6 +35,7 @@ const CommunityDetail = () => {
   const { communityId } = useParams()
   const { user } = useAuth()
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
+  const { t } = useLanguage()
   
   const [community, setCommunity] = useState<CommunityData | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
@@ -114,7 +116,7 @@ const CommunityDetail = () => {
 
           const newPost = {
             ...payload.new,
-            profiles: profileData || { name: 'Anonymous User', avatar_url: '' }
+            profiles: profileData || { name: t('community.anonymous'), avatar_url: '' }
           } as Post
 
           setPosts(currentData => [...currentData, newPost])
@@ -149,18 +151,18 @@ const CommunityDetail = () => {
       setMessage('')
     } catch (err) {
       console.error('Failed to send message:', err)
-      alert('Failed to send message.')
+      alert(t('community.sendFailed'))
     } finally {
       setIsSending(false)
     }
   }
 
   if (loading) {
-    return <div className="text-center py-20 text-gray-400">Loading community...</div>
+    return <div className="text-center py-20 text-gray-400">{t('community.loadingDetail')}</div>
   }
 
   if (!community) {
-    return <div className="text-center py-20 text-gray-400">Community not found</div>
+    return <div className="text-center py-20 text-gray-400">{t('community.notFoundDetail')}</div>
   }
 
   return (
@@ -192,11 +194,11 @@ const CommunityDetail = () => {
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2.5 rounded-full transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          Create Post
+          {t('community.createPost')}
         </button>
         <button className="bg-dark-card hover:bg-dark-hover text-white font-semibold px-6 py-2.5 rounded-full transition-colors border border-dark-border flex items-center gap-2">
           <Rss size={20} />
-          Subscribe
+          {t('community.subscribe')}
         </button>
         <button className="bg-dark-card hover:bg-dark-hover text-white font-semibold px-6 py-2.5 rounded-full transition-colors border border-dark-border">
           <MoreHorizontal size={20} />
@@ -211,7 +213,7 @@ const CommunityDetail = () => {
               <div className="bg-dark-card border border-dark-border rounded-xl p-12 text-center my-auto">
                 <div className="text-6xl mb-4">💬</div>
                 <p className="text-gray-500">
-                  Be the first to say hello to the {community.name} community!
+                  {t('community.beFirst').replace('{name}', community.name)}
                 </p>
               </div>
             ) : (
@@ -235,7 +237,7 @@ const CommunityDetail = () => {
                     <div className={`max-w-[75%] p-4 ${isMine ? 'bg-dark-card/60 border border-green-500/30 rounded-2xl rounded-tr-sm' : 'bg-dark-card border border-dark-border rounded-2xl rounded-tl-sm'}`}>
                       {!isMine && (
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm text-green-400">{post.profiles?.name || 'Anonymous User'}</span>
+                          <span className="font-semibold text-sm text-green-400">{post.profiles?.name || t('community.anonymous')}</span>
                           <span className="text-xs text-gray-500">{new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       )}
@@ -266,7 +268,7 @@ const CommunityDetail = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder={user ? "Message community..." : "Log in to join the conversation"}
+                placeholder={user ? t('community.messagePlaceholder') : t('community.loginToJoin')}
                 className="flex-1 bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all"
                 disabled={!user || isSending}
               />
@@ -285,31 +287,31 @@ const CommunityDetail = () => {
         <div className="space-y-6">
           {/* About Section */}
           <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-            <h2 className="text-xl font-bold mb-4">About {community.name}</h2>
+            <h2 className="text-xl font-bold mb-4">{t('community.about').replace('{name}', community.name)}</h2>
             <p className="text-gray-400 mb-6">{community.description}</p>
 
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-gray-400">
                 <Calendar size={18} />
-                <span className="text-sm">Created {new Date(community.created_at).toLocaleDateString()}</span>
+                <span className="text-sm">{t('community.created').replace('{date}', new Date(community.created_at).toLocaleDateString())}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Globe size={18} />
-                <span className="text-sm">Public</span>
+                <span className="text-sm">{t('community.public')}</span>
               </div>
             </div>
 
             <button className="w-full bg-dark-hover hover:bg-gray-700 text-white font-semibold py-3 rounded-lg transition-colors border border-dark-border">
-              Add a community guide
+              {t('community.addGuide')}
             </button>
           </div>
 
           {/* Moderators Section */}
           <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-            <h2 className="text-xl font-bold mb-4">Moderators</h2>
+            <h2 className="text-xl font-bold mb-4">{t('community.moderators')}</h2>
             <button className="w-full bg-dark-hover hover:bg-gray-700 text-white font-semibold py-3 rounded-lg transition-colors border border-dark-border flex items-center justify-center gap-2">
               <MessageSquare size={18} />
-              Message Mods
+              {t('community.messageMods')}
             </button>
           </div>
         </div>

@@ -1,11 +1,13 @@
 import { TrendingUp } from 'lucide-react'
 import { FormEvent } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 
 interface ProfitAnalyzerProps {
   onAnalyze: (data: { crop: string; mandi: string; }) => void
 }
 
 const ProfitAnalyzer = ({ onAnalyze }: ProfitAnalyzerProps) => {
+  const { t } = useLanguage()
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -70,13 +72,13 @@ const ProfitAnalyzer = ({ onAnalyze }: ProfitAnalyzerProps) => {
     <div className="bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl p-6 mb-6">
       <div className="flex items-center gap-2 mb-5">
         <TrendingUp className="text-green-700" size={20} />
-        <h2 className="text-lg font-semibold text-green-800">Price Prediction Analyzer</h2>
+        <h2 className="text-lg font-semibold text-green-800">{t('price.analyzerTitle')}</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
           <label className="block text-xs uppercase text-gray-600 font-semibold mb-2 tracking-wide">
-            Select Crop
+            {t('price.selectCrop')}
           </label>
           <select 
             name="crop"
@@ -91,7 +93,7 @@ const ProfitAnalyzer = ({ onAnalyze }: ProfitAnalyzerProps) => {
 
         <div className="md:col-span-2">
           <label className="block text-xs uppercase text-gray-600 font-semibold mb-2 tracking-wide">
-            Select Mandi
+            {t('price.selectMandi')}
           </label>
           <select 
             name="mandi"
@@ -110,7 +112,7 @@ const ProfitAnalyzer = ({ onAnalyze }: ProfitAnalyzerProps) => {
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <TrendingUp size={18} />
-            Predict Prices
+            {t('price.predictPrices')}
           </button>
         </div>
       </form>

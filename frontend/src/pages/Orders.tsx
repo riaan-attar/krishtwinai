@@ -4,6 +4,7 @@ import ListProduceModal from '../components/ListProduceModal'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { useAuth } from '../context/AuthContext'
 import { Order as OrderType } from '../types/database'
+import { useLanguage } from '../context/LanguageContext'
 
 interface Order {
   id: string
@@ -20,6 +21,7 @@ interface Order {
 const Orders = () => {
   const [isListProduceOpen, setIsListProduceOpen] = useState(false)
   const { user } = useAuth()
+  const { t } = useLanguage()
   const { data: ordersData, loading } = useRealtimeData<OrderType>('orders', {
     column: 'user_id',
     value: user?.id
@@ -79,21 +81,21 @@ const Orders = () => {
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
             <CheckCircle size={16} />
-            Delivered
+            {t('orders.statusDelivered')}
           </span>
         )
       case 'in-transit':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium">
             <Truck size={16} />
-            In Transit
+            {t('orders.statusTransit')}
           </span>
         )
       case 'ordered':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm font-medium">
             <Clock size={16} />
-            Ordered
+            {t('orders.statusOrdered')}
           </span>
         )
       default:
@@ -106,9 +108,9 @@ const Orders = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Farmer Orders Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('orders.title')}</h1>
           <p className="text-gray-400">
-            Manage your incoming produce shipments across {orders.length} orders.
+            {t('orders.subtitle').replace('{count}', orders.length.toString())}
           </p>
         </div>
         <button 
@@ -116,22 +118,22 @@ const Orders = () => {
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          List Your Produce
+          {t('orders.listProduce')}
         </button>
       </div>
 
       {/* Orders List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-12 text-gray-400">Loading orders...</div>
+          <div className="text-center py-12 text-gray-400">{t('orders.loading')}</div>
         ) : orders.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400 mb-4">No orders yet</p>
+            <p className="text-gray-400 mb-4">{t('orders.noOrders')}</p>
             <button 
               onClick={() => setIsListProduceOpen(true)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
             >
-              List Your First Produce
+              {t('orders.listFirst')}
             </button>
           </div>
         ) : (
@@ -143,8 +145,8 @@ const Orders = () => {
             {/* Order Header */}
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-xl font-bold mb-1">Order #{order.orderNumber}</h3>
-                <p className="text-gray-400 text-sm">Placed on {order.placedDate}</p>
+                <h3 className="text-xl font-bold mb-1">{t('orders.orderNumber').replace('{id}', order.orderNumber)}</h3>
+                <p className="text-gray-400 text-sm">{t('orders.placedOn').replace('{date}', order.placedDate)}</p>
               </div>
               {getStatusBadge(order.status)}
             </div>
@@ -154,16 +156,16 @@ const Orders = () => {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <h4 className="text-lg font-bold mb-2">{order.product}</h4>
-                  <p className="text-gray-400 text-sm">Buyer: {order.buyer}</p>
+                  <p className="text-gray-400 text-sm">{t('orders.buyer').replace('{name}', order.buyer)}</p>
                 </div>
 
                 <div className="flex gap-12 text-right">
                   <div>
-                    <p className="text-gray-400 text-sm mb-1">QUANTITY</p>
+                    <p className="text-gray-400 text-sm mb-1">{t('orders.quantityLabel')}</p>
                     <p className="text-xl font-bold">{order.quantity}</p>
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm mb-1">TOTAL PAYOUT</p>
+                    <p className="text-gray-400 text-sm mb-1">{t('orders.payoutLabel')}</p>
                     <p className="text-xl font-bold text-green-400">{order.totalPayout}</p>
                   </div>
                 </div>

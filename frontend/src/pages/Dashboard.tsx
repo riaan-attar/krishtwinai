@@ -7,105 +7,107 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { Community } from '../types/database'
+import { useLanguage } from '../context/LanguageContext'
 
 const Dashboard = () => {
   const { user } = useAuth()
   const { data: communities } = useRealtimeData<Community>('communities')
+  const { t } = useLanguage()
   const firstName = user?.user_metadata?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'Farmer'
   const now = new Date()
   const hour = now.getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const greeting = hour < 12 ? t('dashboard.greetingMorning') : hour < 18 ? t('dashboard.greetingAfternoon') : t('dashboard.greetingEvening')
 
   // Quick action feature cards
   const features = [
     {
       icon: TrendingUp,
-      title: 'Crop Price Prediction',
-      description: 'Predict mandi prices for the next 4 days across Maharashtra markets.',
+      title: t('dashboard.predictCropPrices'),
+      description: t('dashboard.cropPricePredictionDesc'),
       color: 'from-blue-600 to-blue-500',
       iconBg: 'bg-blue-500/20',
       link: '/price-prediction',
-      badge: 'AI Powered'
+      badge: t('badge.aiPowered')
     },
     {
       icon: Lightbulb,
-      title: 'Crop Recommendation',
-      description: 'Get AI-tailored suggestions based on soil and season.',
+      title: t('dashboard.cropRecommendation'),
+      description: t('dashboard.cropRecommendationDesc'),
       color: 'from-emerald-600 to-green-500',
       iconBg: 'bg-green-500/20',
       link: '/crop-recommendation',
-      badge: 'Smart'
+      badge: t('badge.smart')
     },
     {
       icon: CloudSun,
-      title: 'Weather Advice',
-      description: 'Real-time weather forecasts with actionable farming tips.',
+      title: t('dashboard.weatherAdvice'),
+      description: t('dashboard.weatherAdviceDesc'),
       color: 'from-orange-600 to-amber-500',
       iconBg: 'bg-orange-500/20',
       link: '/weather-advice',
-      badge: 'Live'
+      badge: t('badge.live')
     },
     {
       icon: AlertTriangle,
-      title: 'Disease Detection',
-      description: 'Upload a photo of your crop — get instant disease diagnosis + AI treatment plan.',
+      title: t('dashboard.diseaseDetection'),
+      description: t('dashboard.diseaseDetectionDesc'),
       color: 'from-red-600 to-rose-500',
       iconBg: 'bg-red-500/20',
       link: '/disease-detection',
-      badge: 'Gemini AI'
+      badge: t('badge.geminiAi')
     },
     {
       icon: Landmark,
-      title: 'Government Schemes',
-      description: 'Browse loan waivers, subsidies and insurance schemes for Maharashtra farmers.',
+      title: t('dashboard.governmentSchemes'),
+      description: t('dashboard.governmentSchemesDesc'),
       color: 'from-purple-600 to-violet-500',
       iconBg: 'bg-purple-500/20',
       link: '/government-schemes',
-      badge: '8 Active Schemes'
+      badge: t('badge.activeSchemes')
     },
     {
       icon: MapPin,
-      title: 'Buyer Marketplace',
-      description: 'Connect with verified buyers and retailers across Maharashtra on the map.',
+      title: t('dashboard.buyerMarketplace'),
+      description: t('dashboard.buyerMarketplaceDesc'),
       color: 'from-cyan-600 to-teal-500',
       iconBg: 'bg-cyan-500/20',
       link: '/marketplace',
-      badge: 'Live Map'
+      badge: t('badge.liveMap')
     },
     {
       icon: Users,
-      title: 'Community Hub',
-      description: 'Chat with farmers, share insights, and grow together.',
+      title: t('dashboard.communityHub'),
+      description: t('dashboard.communityHubDesc'),
       color: 'from-pink-600 to-rose-500',
       iconBg: 'bg-pink-500/20',
       link: '/community',
-      badge: `${communities.length} Communities`
+      badge: t('badge.communities').replace('{count}', communities.length.toString())
     },
     {
       icon: ShoppingCart,
-      title: 'My Orders',
-      description: 'Track your active orders and manage deliveries.',
+      title: t('dashboard.myOrders'),
+      description: t('dashboard.myOrdersDesc'),
       color: 'from-yellow-600 to-amber-500',
       iconBg: 'bg-yellow-500/20',
       link: '/orders',
-      badge: 'Track'
+      badge: t('badge.track')
     }
   ]
 
   // Stats bar data
   const stats = [
-    { icon: BarChart2, label: 'Crops Supported', value: '5', sub: 'Onion, Wheat, Rice, Tomato, Potato', color: 'text-blue-400' },
-    { icon: Landmark, label: 'Govt Schemes', value: '8', sub: 'Active schemes available', color: 'text-purple-400' },
-    { icon: MapPin, label: 'Maharashtra Mandis', value: '100+', sub: 'Markets tracked', color: 'text-green-400' },
-    { icon: Activity, label: 'AI Models', value: '3', sub: 'Price, Disease & Weather', color: 'text-orange-400' },
+    { icon: BarChart2, label: t('stat.cropsSupported'), value: '5', sub: t('stat.cropsSub'), color: 'text-blue-400' },
+    { icon: Landmark, label: t('stat.govtSchemes'), value: '8', sub: t('stat.schemesSub'), color: 'text-purple-400' },
+    { icon: MapPin, label: t('stat.maharashtraMandis'), value: '100+', sub: t('stat.mandisSub'), color: 'text-green-400' },
+    { icon: Activity, label: t('stat.aiModels'), value: '3', sub: t('stat.modelsSub'), color: 'text-orange-400' },
   ]
 
   // Quick tips for farmers
   const tips = [
-    { icon: '🌧️', text: 'Kharif season starts June–July. Start planning water management early.' },
-    { icon: '💉', text: 'Upload crop images regularly to detect diseases before they spread.' },
-    { icon: '📈', text: 'Check 4-day price predictions before selling your produce at mandi.' },
-    { icon: '📋', text: 'Pradhan Mantri Fasal Bima Yojana deadline — enroll before planting.' },
+    { icon: '🌧️', text: t('tip.1') },
+    { icon: '💉', text: t('tip.2') },
+    { icon: '📈', text: t('tip.3') },
+    { icon: '📋', text: t('tip.4') },
   ]
 
   return (
@@ -120,13 +122,13 @@ const Dashboard = () => {
         <div className="relative">
           <div className="flex items-center gap-2 text-green-400 text-sm font-medium mb-2">
             <Leaf size={14} />
-            KrishiSetu AI Dashboard
+            {t('dashboard.welcomeMsg')}
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">
             {greeting}, {firstName}! 👋
           </h1>
           <p className="text-gray-400 text-lg max-w-xl">
-            Your AI-powered farming assistant for Maharashtra. Get crop predictions, detect diseases, explore government schemes, and connect with buyers — all in one place.
+            {t('dashboard.assistantDesc')}
           </p>
           <div className="flex gap-3 mt-6">
             <Link
@@ -134,14 +136,14 @@ const Dashboard = () => {
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl transition-all hover:scale-[1.02]"
             >
               <TrendingUp size={18} />
-              Predict Crop Prices
+              {t('dashboard.predictCropPrices')}
             </Link>
             <Link
               to="/disease-detection"
               className="inline-flex items-center gap-2 bg-dark-card hover:bg-dark-hover border border-dark-border text-white font-semibold px-5 py-2.5 rounded-xl transition-all"
             >
               <AlertTriangle size={18} />
-              Check Disease
+              {t('dashboard.checkDisease')}
             </Link>
           </div>
         </div>
@@ -167,8 +169,8 @@ const Dashboard = () => {
       {/* Feature Grid */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white">All Features</h2>
-          <span className="text-xs text-gray-500">8 modules available</span>
+          <h2 className="text-xl font-bold text-white">{t('dashboard.allFeatures')}</h2>
+          <span className="text-xs text-gray-500">{t('dashboard.modulesAvailable')}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map((feat) => {
@@ -192,7 +194,7 @@ const Dashboard = () => {
                   <p className="text-gray-500 text-xs leading-relaxed">{feat.description}</p>
                 </div>
                 <div className="flex items-center gap-1 text-green-500 text-xs font-semibold mt-auto pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Open <ArrowRight size={12} />
+                  {t('dashboard.open')} <ArrowRight size={12} />
                 </div>
               </Link>
             )
@@ -206,7 +208,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2 bg-dark-card rounded-xl border border-dark-border p-6">
           <div className="flex items-center gap-2 mb-5">
             <Bell size={18} className="text-green-400" />
-            <h2 className="text-lg font-bold text-white">Farming Tips & Reminders</h2>
+            <h2 className="text-lg font-bold text-white">{t('dashboard.farmingTips')}</h2>
           </div>
           <div className="space-y-3">
             {tips.map((tip, i) => (
@@ -222,16 +224,16 @@ const Dashboard = () => {
         <div className="bg-dark-card rounded-xl border border-dark-border p-6">
           <div className="flex items-center gap-2 mb-5">
             <FileText size={18} className="text-green-400" />
-            <h2 className="text-lg font-bold text-white">Quick Access</h2>
+            <h2 className="text-lg font-bold text-white">{t('dashboard.quickAccess')}</h2>
           </div>
           <div className="space-y-2">
             {[
-              { label: 'Produce Listings', link: '/produce-listings', icon: '🌽' },
-              { label: 'My Orders', link: '/orders', icon: '📦' },
-              { label: 'Government Schemes', link: '/government-schemes', icon: '🏛️' },
-              { label: 'Community Hub', link: '/community', icon: '💬' },
-              { label: 'Profile Settings', link: '/profile', icon: '👤' },
-              { label: 'App Settings', link: '/settings', icon: '⚙️' },
+              { label: t('label.produceListings'), link: '/produce-listings', icon: '🌽' },
+              { label: t('dashboard.myOrders'), link: '/orders', icon: '📦' },
+              { label: t('dashboard.governmentSchemes'), link: '/government-schemes', icon: '🏛️' },
+              { label: t('dashboard.communityHub'), link: '/community', icon: '💬' },
+              { label: t('label.profileSettings'), link: '/profile', icon: '👤' },
+              { label: t('label.appSettings'), link: '/settings', icon: '⚙️' },
             ].map((item) => (
               <Link
                 key={item.link}

@@ -5,8 +5,10 @@ import {
   CheckCircle, ArrowRight, Menu, X, 
   Leaf, BarChart3, Users, Shield, Zap, Target
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Landing() {
+  const { t, language, setLanguage } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -39,26 +41,54 @@ export default function Landing() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-700 hover:text-green-600 transition-colors font-medium">Features</a>
-              <a href="#how-it-works" className="text-gray-700 hover:text-green-600 transition-colors font-medium">How It Works</a>
-              <a href="#benefits" className="text-gray-700 hover:text-green-600 transition-colors font-medium">Benefits</a>
-              <a href="#impact" className="text-gray-700 hover:text-green-600 transition-colors font-medium">About</a>
+              <a href="#features" className="text-gray-700 hover:text-green-600 transition-colors font-medium">{t('landing.navFeatures')}</a>
+              <a href="#how-it-works" className="text-gray-700 hover:text-green-600 transition-colors font-medium">{t('landing.navHowItWorks')}</a>
+              <a href="#benefits" className="text-gray-700 hover:text-green-600 transition-colors font-medium">{t('landing.navBenefits')}</a>
+              <a href="#impact" className="text-gray-700 hover:text-green-600 transition-colors font-medium">{t('landing.navAbout')}</a>
             </div>
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center space-x-4">
               <Link 
                 to="/login" 
-                className="px-5 py-2.5 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-all"
+                className="px-6 py-2.5 text-green-600 font-semibold hover:bg-green-50 rounded-full transition-colors"
               >
-                Sign In
+                {t('landing.signIn')}
               </Link>
               <Link 
                 to="/signup" 
-                className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                className="px-6 py-2.5 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
               >
-                Get Started
+                {t('landing.getStarted')}
               </Link>
+
+              {/* Language Switcher */}
+              <div className="flex items-center bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
+                <button
+                  onClick={() => setLanguage('en')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    language === 'en' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLanguage('hi')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    language === 'hi' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  हिन्दी
+                </button>
+                <button
+                  onClick={() => setLanguage('mr')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    language === 'mr' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  मराठी
+                </button>
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -75,16 +105,16 @@ export default function Landing() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t shadow-lg">
             <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block py-2 text-gray-700 hover:text-green-600 font-medium">Features</a>
-              <a href="#how-it-works" className="block py-2 text-gray-700 hover:text-green-600 font-medium">How It Works</a>
-              <a href="#benefits" className="block py-2 text-gray-700 hover:text-green-600 font-medium">Benefits</a>
-              <a href="#impact" className="block py-2 text-gray-700 hover:text-green-600 font-medium">About</a>
+              <a href="#features" className="block py-2 text-gray-700 hover:text-green-600 font-medium">{t('landing.navFeatures')}</a>
+              <a href="#how-it-works" className="block py-2 text-gray-700 hover:text-green-600 font-medium">{t('landing.navHowItWorks')}</a>
+              <a href="#benefits" className="block py-2 text-gray-700 hover:text-green-600 font-medium">{t('landing.navBenefits')}</a>
+              <a href="#impact" className="block py-2 text-gray-700 hover:text-green-600 font-medium">{t('landing.navAbout')}</a>
               <div className="pt-4 space-y-2">
                 <Link to="/login" className="block w-full px-5 py-2.5 border-2 border-green-600 text-green-600 rounded-lg font-semibold text-center">
-                  Sign In
+                  {t('landing.signIn')}
                 </Link>
                 <Link to="/signup" className="block w-full px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold text-center">
-                  Get Started
+                  {t('landing.getStarted')}
                 </Link>
               </div>
             </div>
@@ -104,18 +134,18 @@ export default function Landing() {
             {/* Left Content */}
             <div className="text-center md:text-left space-y-6 md:space-y-8">
               <div className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                🌾 AI-Powered Agricultural Intelligence
+                {t('landing.heroBadge')}
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Grow Smarter,
+                {t('landing.heroTitle1')}
                 <span className="block bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  Earn Better
+                  {t('landing.heroTitle2')}
                 </span>
               </h1>
               
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-                Empower your farm with AI-driven crop recommendations, real-time market prices, and direct access to buyers. Make data-backed decisions that maximize your profits.
+                {t('landing.heroDesc')}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -123,11 +153,11 @@ export default function Landing() {
                   onClick={() => navigate('/signup')}
                   className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center space-x-2"
                 >
-                  <span>Get Started Free</span>
+                  <span>{t('landing.getStartedFree')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <button className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-lg hover:border-green-600 hover:text-green-600 transition-all">
-                  Watch Demo
+                  {t('landing.watchDemo')}
                 </button>
               </div>
 
@@ -135,11 +165,11 @@ export default function Landing() {
               <div className="flex flex-wrap gap-6 justify-center md:justify-start pt-4">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-sm text-gray-600">No Credit Card Required</span>
+                  <span className="text-sm text-gray-600">{t('landing.noCreditCard')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-sm text-gray-600">Free for Farmers</span>
+                  <span className="text-sm text-gray-600">{t('landing.freeForFarmers')}</span>
                 </div>
               </div>
             </div>
@@ -153,9 +183,9 @@ export default function Landing() {
                       <Sprout className="w-10 h-10 text-white" />
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm text-gray-600">AI Analysis Complete</div>
+                      <div className="text-sm text-gray-600">{t('landing.aiAnalysisComplete')}</div>
                       <div className="text-2xl font-bold text-green-600">₹45,000</div>
-                      <div className="text-sm text-gray-500">Projected Profit Increase</div>
+                      <div className="text-sm text-gray-500">{t('landing.projectedProfit')}</div>
                     </div>
                   </div>
                 </div>
@@ -165,7 +195,7 @@ export default function Landing() {
                   <div className="flex items-center space-x-2">
                     <TrendingUp className="w-5 h-5 text-green-600" />
                     <div>
-                      <div className="text-xs text-gray-500">Market Price</div>
+                      <div className="text-xs text-gray-500">{t('landing.marketPrice')}</div>
                       <div className="text-sm font-bold text-gray-900">₹2,850/q</div>
                     </div>
                   </div>
@@ -175,8 +205,8 @@ export default function Landing() {
                   <div className="flex items-center space-x-2">
                     <Cloud className="w-5 h-5 text-blue-600" />
                     <div>
-                      <div className="text-xs text-gray-500">Weather</div>
-                      <div className="text-sm font-bold text-gray-900">Perfect</div>
+                      <div className="text-xs text-gray-500">{t('nav.weatherAdvice')}</div>
+                      <div className="text-sm font-bold text-gray-900">{t('landing.weatherPerfect')}</div>
                     </div>
                   </div>
                 </div>
@@ -191,10 +221,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Why Farmers & Retailers Choose Us
+              {t('landing.whyChooseTitle')}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Real solutions that increase income, reduce risk, and connect farms directly to markets
+              {t('landing.whyChooseDesc')}
             </p>
           </div>
 
@@ -204,9 +234,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6">
                 <TrendingUp className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Higher Profits for Farmers</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit1Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Get real-time market prices and AI recommendations to sell at the right time. Increase your income by up to 30% with data-driven decisions.
+                {t('landing.benefit1Desc')}
               </p>
             </div>
 
@@ -215,9 +245,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Smarter Crop Decisions</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit2Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                AI analyzes your soil, weather, and market demand to recommend the most profitable crops for your land. Reduce crop failures and maximize yield.
+                {t('landing.benefit2Desc')}
               </p>
             </div>
 
@@ -226,9 +256,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
                 <Users className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Direct Buyer Connection</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit3Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Skip middlemen and sell directly to retailers and buyers. Keep more profit in your pocket with transparent, fair pricing.
+                {t('landing.benefit3Desc')}
               </p>
             </div>
 
@@ -237,9 +267,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-6">
                 <Shield className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Reduced Losses & Risk</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit4Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Weather alerts, disease predictions, and market insights help you avoid losses. Make informed decisions backed by AI intelligence.
+                {t('landing.benefit4Desc')}
               </p>
             </div>
 
@@ -248,9 +278,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
                 <ShoppingCart className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Reliable Sourcing for Retailers</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit5Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Buyers get direct access to quality produce from verified farmers. Build long-term relationships and ensure consistent supply.
+                {t('landing.benefit5Desc')}
               </p>
             </div>
 
@@ -259,9 +289,9 @@ export default function Landing() {
               <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
                 <Zap className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">No Middlemen Dependency</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.benefit6Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Take control of your sales and pricing. Connect directly with buyers and negotiate fair deals without losing margin to intermediaries.
+                {t('landing.benefit6Desc')}
               </p>
             </div>
           </div>
@@ -273,10 +303,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Powerful Features Built for Farmers
+              {t('landing.featuresTitle')}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to make better farming decisions and grow your business
+              {t('landing.featuresDesc')}
             </p>
           </div>
 
@@ -286,9 +316,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Sprout className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">AI Crop Recommendation</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.feature1Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Get personalized crop suggestions based on your soil type, climate, and market demand. Plant what sells best.
+                {t('landing.feature1Desc')}
               </p>
             </div>
 
@@ -297,9 +327,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Market Price Prediction</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.feature2Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                See future price trends and current market rates. Know when to sell for maximum profit with AI-powered forecasts.
+                {t('landing.feature2Desc')}
               </p>
             </div>
 
@@ -308,9 +338,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Cloud className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Weather Insights</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.feature3Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Get real-time weather updates and farming advice. Plan your activities with accurate forecasts and alerts.
+                {t('landing.feature3Desc')}
               </p>
             </div>
 
@@ -319,9 +349,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <ShoppingCart className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Direct Buyer Marketplace</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('landing.feature4Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                List your produce and connect with verified buyers. Sell directly without middlemen and get fair prices.
+                {t('landing.feature4Desc')}
               </p>
             </div>
           </div>
@@ -333,10 +363,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Simple. Smart. Profitable.
+              {t('landing.howItWorksTitle')}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Start making better farming decisions in just 3 easy steps
+              {t('landing.howItWorksDesc')}
             </p>
           </div>
 
@@ -349,9 +379,9 @@ export default function Landing() {
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-6 relative z-10 shadow-lg">
                 <span className="text-3xl font-bold text-white">1</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Enter Farm Details</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('landing.step1Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Tell us about your land size, soil type, location, and what you want to grow. Takes less than 2 minutes.
+                {t('landing.step1Desc')}
               </p>
             </div>
 
@@ -360,9 +390,9 @@ export default function Landing() {
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-6 relative z-10 shadow-lg">
                 <span className="text-3xl font-bold text-white">2</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">AI Analyzes Data</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('landing.step2Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our AI studies weather patterns, market prices, soil conditions, and demand to find the best opportunities for you.
+                {t('landing.step2Desc')}
               </p>
             </div>
 
@@ -371,9 +401,9 @@ export default function Landing() {
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-6 relative z-10 shadow-lg">
                 <span className="text-3xl font-bold text-white">3</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Get Results & Connect</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('landing.step3Title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Receive crop recommendations, price predictions, and connect with buyers ready to purchase your produce at fair prices.
+                {t('landing.step3Desc')}
               </p>
             </div>
           </div>
@@ -383,7 +413,7 @@ export default function Landing() {
               onClick={() => navigate('/signup')}
               className="px-10 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all inline-flex items-center space-x-2"
             >
-              <span>Start Your Journey</span>
+              <span>{t('landing.startJourney')}</span>
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
@@ -395,10 +425,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              See KrishiSetu-AI in Action
+              {t('landing.previewTitle')}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              A complete platform designed for modern farmers and smart retailers
+              {t('landing.previewDesc')}
             </p>
           </div>
 
@@ -406,7 +436,7 @@ export default function Landing() {
             {/* Farmer Dashboard Preview */}
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
               <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
-                <h3 className="text-xl font-bold text-white">Farmer Dashboard</h3>
+                <h3 className="text-xl font-bold text-white">{t('landing.farmerDashboard')}</h3>
               </div>
               <div className="p-6 space-y-4">
                 <div className="aspect-video bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
@@ -419,15 +449,15 @@ export default function Landing() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Weather</div>
+                    <div className="text-xs text-gray-600">{t('nav.weatherAdvice')}</div>
                     <div className="text-sm font-bold text-green-600">28°C</div>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Price</div>
+                    <div className="text-xs text-gray-600">{t('marketplace.price')}</div>
                     <div className="text-sm font-bold text-blue-600">₹2,850</div>
                   </div>
                   <div className="bg-purple-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Buyers</div>
+                    <div className="text-xs text-gray-600">{t('marketplace.buyers')}</div>
                     <div className="text-sm font-bold text-purple-600">12</div>
                   </div>
                 </div>
@@ -437,28 +467,28 @@ export default function Landing() {
             {/* Buyer Dashboard Preview */}
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
               <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4">
-                <h3 className="text-xl font-bold text-white">Buyer Dashboard</h3>
+                <h3 className="text-xl font-bold text-white">{t('landing.buyerDashboard')}</h3>
               </div>
               <div className="p-6 space-y-4">
                 <div className="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
                   <div className="text-center space-y-3">
                     <ShoppingCart className="w-16 h-16 mx-auto text-blue-600" />
-                    <div className="text-sm text-gray-600">Available Produce</div>
+                    <div className="text-sm text-gray-600">{t('landing.availableProduce')}</div>
                     <div className="text-lg font-bold text-gray-900">250+ Listings</div>
-                    <div className="text-xs text-gray-500">From verified farmers</div>
+                    <div className="text-xs text-gray-500">{t('landing.fromVerified')}</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Farmers</div>
+                    <div className="text-xs text-gray-600">{t('marketplace.farmers')}</div>
                     <div className="text-sm font-bold text-green-600">150+</div>
                   </div>
                   <div className="bg-orange-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Orders</div>
+                    <div className="text-xs text-gray-600">{t('nav.orders')}</div>
                     <div className="text-sm font-bold text-orange-600">45</div>
                   </div>
                   <div className="bg-purple-50 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-600">Savings</div>
+                    <div className="text-xs text-gray-600">{t('marketplace.savings')}</div>
                     <div className="text-sm font-bold text-purple-600">25%</div>
                   </div>
                 </div>
@@ -469,20 +499,20 @@ export default function Landing() {
           {/* Feature Highlights */}
           <div className="grid md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-              <div className="text-3xl font-bold text-green-600 mb-2">Real-time</div>
-              <div className="text-sm text-gray-600">Market Data</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">{t('landing.realTimeMarket')}</div>
+              <div className="text-sm text-gray-600">{t('landing.marketData')}</div>
             </div>
             <div className="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-              <div className="text-3xl font-bold text-blue-600 mb-2">AI-Powered</div>
-              <div className="text-sm text-gray-600">Recommendations</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">{t('landing.aiRecsLarge')}</div>
+              <div className="text-sm text-gray-600">{t('landing.aiRecsDesc')}</div>
             </div>
             <div className="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-              <div className="text-3xl font-bold text-purple-600 mb-2">Direct</div>
-              <div className="text-sm text-gray-600">Buyer Access</div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">{t('landing.directAccessLarge')}</div>
+              <div className="text-sm text-gray-600">{t('landing.directAccessDesc')}</div>
             </div>
             <div className="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-              <div className="text-3xl font-bold text-orange-600 mb-2">24/7</div>
-              <div className="text-sm text-gray-600">Support</div>
+              <div className="text-3xl font-bold text-orange-600 mb-2">{t('landing.supportLarge')}</div>
+              <div className="text-sm text-gray-600">{t('landing.supportDesc')}</div>
             </div>
           </div>
         </div>
@@ -493,10 +523,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Real Impact. Real Results.
+              {t('landing.impactTitle')}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Transforming agriculture through technology and empowering farming communities
+              {t('landing.impactDesc')}
             </p>
           </div>
 
@@ -507,7 +537,7 @@ export default function Landing() {
                 <TrendingUp className="w-10 h-10 text-white" />
               </div>
               <div className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">30%</div>
-              <div className="text-gray-600 font-medium">Average Income Increase</div>
+              <div className="text-gray-600 font-medium">{t('landing.incomeIncrease')}</div>
             </div>
 
             {/* Impact Stat 2 */}
@@ -516,7 +546,7 @@ export default function Landing() {
                 <Shield className="w-10 h-10 text-white" />
               </div>
               <div className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">40%</div>
-              <div className="text-gray-600 font-medium">Reduction in Crop Losses</div>
+              <div className="text-gray-600 font-medium">{t('landing.lossReduction')}</div>
             </div>
 
             {/* Impact Stat 3 */}
@@ -525,7 +555,7 @@ export default function Landing() {
                 <Users className="w-10 h-10 text-white" />
               </div>
               <div className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">100%</div>
-              <div className="text-gray-600 font-medium">Transparent Pricing</div>
+              <div className="text-gray-600 font-medium">{t('landing.transparentPricing')}</div>
             </div>
 
             {/* Impact Stat 4 */}
@@ -534,7 +564,7 @@ export default function Landing() {
                 <Zap className="w-10 h-10 text-white" />
               </div>
               <div className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">0</div>
-              <div className="text-gray-600 font-medium">Middlemen Required</div>
+              <div className="text-gray-600 font-medium">{t('landing.noMiddlemen')}</div>
             </div>
           </div>
 
@@ -546,8 +576,8 @@ export default function Landing() {
                   <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Verified Farmers</h3>
-                  <p className="text-gray-600">All farmers are verified to ensure quality and authenticity for buyers</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{t('landing.verifiedFarmersTitle')}</h3>
+                  <p className="text-gray-600">{t('landing.verifiedFarmersDesc')}</p>
                 </div>
               </div>
 
@@ -556,8 +586,8 @@ export default function Landing() {
                   <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Secure Transactions</h3>
-                  <p className="text-gray-600">Safe and secure payment processing with buyer protection</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{t('landing.secureTransTitle')}</h3>
+                  <p className="text-gray-600">{t('landing.secureTransDesc')}</p>
                 </div>
               </div>
 
@@ -566,8 +596,8 @@ export default function Landing() {
                   <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Expert Support</h3>
-                  <p className="text-gray-600">Agricultural experts available to help you succeed</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{t('landing.expertSupportTitle')}</h3>
+                  <p className="text-gray-600">{t('landing.expertSupportDesc')}</p>
                 </div>
               </div>
             </div>
@@ -585,10 +615,10 @@ export default function Landing() {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Farming?
+            {t('landing.readyToTransform')}
           </h2>
           <p className="text-lg md:text-xl text-green-50 mb-8 leading-relaxed">
-            Join thousands of farmers who are already earning more, reducing losses, and connecting directly with buyers. Start your journey to smarter, more profitable farming today.
+            {t('landing.ctaDesc')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -596,26 +626,26 @@ export default function Landing() {
               onClick={() => navigate('/signup')}
               className="px-10 py-5 bg-white text-green-600 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all inline-flex items-center space-x-2"
             >
-              <span>Get Started Free</span>
+              <span>{t('landing.getStartedFree')}</span>
               <ArrowRight className="w-5 h-5" />
             </button>
             <button className="px-10 py-5 bg-transparent border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-green-600 transition-all">
-              Schedule a Demo
+              {t('landing.scheduleDemo')}
             </button>
           </div>
 
           <div className="flex flex-wrap gap-6 justify-center text-green-50">
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
-              <span>Free for Farmers</span>
+              <span>{t('landing.freeForFarmers')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
-              <span>No Credit Card</span>
+              <span>{t('landing.noCreditCard')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
-              <span>Setup in 2 Minutes</span>
+              <span>{t('landing.setupTime')}</span>
             </div>
           </div>
         </div>
@@ -634,21 +664,21 @@ export default function Landing() {
                 <span className="text-xl font-bold text-white">KrishiSetu-AI</span>
               </div>
               <p className="text-gray-400 mb-4 leading-relaxed">
-                Empowering farmers with AI-driven insights and connecting them directly to markets. Building a smarter, more profitable future for agriculture.
+                {t('landing.footerDesc')}
               </p>
               <div className="text-sm text-gray-500">
-                Built for National Hackathon 2024
+                {t('landing.builtFor')}
               </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-white font-bold mb-4">Quick Links</h3>
+              <h3 className="text-white font-bold mb-4">{t('landing.quickLinks')}</h3>
               <ul className="space-y-2">
-                <li><a href="#features" className="hover:text-green-400 transition-colors">Features</a></li>
-                <li><a href="#how-it-works" className="hover:text-green-400 transition-colors">How It Works</a></li>
-                <li><a href="#benefits" className="hover:text-green-400 transition-colors">Benefits</a></li>
-                <li><a href="#impact" className="hover:text-green-400 transition-colors">About</a></li>
+                <li><a href="#features" className="hover:text-green-400 transition-colors">{t('landing.navFeatures')}</a></li>
+                <li><a href="#how-it-works" className="hover:text-green-400 transition-colors">{t('landing.navHowItWorks')}</a></li>
+                <li><a href="#benefits" className="hover:text-green-400 transition-colors">{t('landing.navBenefits')}</a></li>
+                <li><a href="#impact" className="hover:text-green-400 transition-colors">{t('landing.navAbout')}</a></li>
               </ul>
             </div>
 

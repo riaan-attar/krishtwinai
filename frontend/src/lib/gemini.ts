@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { CropRecommendationInput, CropRecommendationResponse } from '../types/crops'
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY
 
@@ -8,61 +9,20 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey)
 
-export interface CropRecommendationInput {
-  location: {
-    latitude: number
-    longitude: number
-    region?: string
-    state?: string
-  }
-  soilType?: string
-  season?: string
-  farmSize?: number
-  previousCrops?: string[]
-  budget?: number
-  waterAvailability?: string
-  farmingExperience?: string
-}
-
-export interface CropRecommendation {
-  name: string
-  suitabilityScore: number
-  reason: string
-  expectedYield: string
-  riskLevel: 'Low' | 'Medium' | 'High'
-}
-
-export interface CropRecommendationResponse {
-  recommendedCrops: CropRecommendation[]
-  finalRecommendation: {
-    bestCrop: string
-    reason: string
-  }
-}
-
 export async function getCropRecommendations(
   input: CropRecommendationInput
 ): Promise<CropRecommendationResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const prompt = `
-You are an expert agricultural advisor for Indian farmers. Based on the following farmer data, provide high-quality, practical crop recommendations.
+You are an expert agricultural advisor for Indian farmers. Based on the following farmer data provided in JSON format, provide high-quality, practical crop recommendations.
 
-Farmer Data:
-- Location: Latitude ${input.location.latitude}, Longitude ${input.location.longitude}
-- Region/City: ${input.location.region || 'Maharashtra'}
-- State: ${input.location.state || 'Maharashtra'}
-- Soil Type: ${input.soilType || 'Black Soil'}
-- Season: ${input.season || 'Current'}
-- Farm Size: ${input.farmSize || 'Not specified'} acres
-- Previous Crops: ${input.previousCrops?.join(', ') || 'None'}
-- Water Availability: ${input.waterAvailability || 'Average'}
-- Budget: ${input.budget || 'Not specified'}
-- Farming Experience: ${input.farmingExperience || 'Not specified'}
+Farmer Data (JSON):
+${JSON.stringify(input, null, 2)}
 
 Your task is to:
-1. Recommend the 3 best crops for this specific location, soil, and budget.
+1. Recommend the 3 best crops for this specific location, soil, budget, and environmental conditions given in the JSON.
 2. Provide a detailed, context-aware reason for each.
 3. Assign a realistic suitability score (65-98) and risk level.
 4. Pick the single best "Final Recommendation".
@@ -74,19 +34,23 @@ Provide the output in this EXACT JSON format (no markdown code blocks, just pure
     {
       "name": "Crop Name",
       "suitabilityScore": 92,
-      "reason": "Specific explanation based on soil, season, and irrigation.",
+      "reason": "Specific explanation based on provided inputs.",
       "expectedYield": "Range in quintals/hectare",
       "riskLevel": "Low"
     },
     {
       "name": "Second Crop",
       "suitabilityScore": 87,
-      "reason": "..."
+      "reason": "...",
+      "expectedYield": "...",
+      "riskLevel": "Medium"
     },
     {
       "name": "Third Crop",
       "suitabilityScore": 81,
-      "reason": "..."
+      "reason": "...",
+      "expectedYield": "...",
+      "riskLevel": "High"
     }
   ],
   "finalRecommendation": {

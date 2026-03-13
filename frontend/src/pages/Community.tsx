@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { Community as CommunityType } from '../types/database'
+import { useLanguage } from '../context/LanguageContext'
 
 interface CommunityCard {
   id: string
@@ -15,6 +16,7 @@ interface CommunityCard {
 
 const Community = () => {
   const { data: communitiesData, loading } = useRealtimeData<CommunityType>('communities')
+  const { t } = useLanguage()
 
   const communities: CommunityCard[] = communitiesData.map(community => ({
     id: community.id,
@@ -23,24 +25,24 @@ const Community = () => {
     description: community.description || '',
     image: community.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&h=400&fit=crop',
     posts: community.posts_count,
-    lastActive: 'just now'
+    lastActive: t('community.justNow')
   }))
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Community Hub</h1>
+        <h1 className="text-4xl font-bold mb-2">{t('community.title')}</h1>
         <p className="text-gray-400">
-          Connect with fellow farmers, share knowledge, and grow together. Explore a community or search for content below.
+          {t('community.subtitle')}
         </p>
       </div>
 
       {/* Community Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full text-center py-12 text-gray-400">Loading communities...</div>
+          <div className="col-span-full text-center py-12 text-gray-400">{t('community.loading')}</div>
         ) : communities.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-gray-400">No communities found</div>
+          <div className="col-span-full text-center py-12 text-gray-400">{t('community.notFound')}</div>
         ) : (
           communities.map((community) => (
           <Link
@@ -68,7 +70,7 @@ const Community = () => {
 
               {/* Stats */}
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Official Hub • {community.posts} Posts</span>
+                <span>{t('community.officialHub')} • {t('community.posts').replace('{count}', community.posts.toString())}</span>
                 <span>{community.lastActive}</span>
               </div>
             </div>

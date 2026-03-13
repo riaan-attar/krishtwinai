@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Plus, AlertCircle } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
+import { useLanguage } from '../context/LanguageContext'
 import GovernmentSchemesFilter from '../components/GovernmentSchemesFilter'
 import GovernmentSchemesList from '../components/GovernmentSchemesList'
 
@@ -19,6 +20,7 @@ export interface GovernmentScheme {
 }
 
 const GovernmentSchemes = () => {
+  const { t } = useLanguage()
   const themeClasses = useThemeClasses()
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -26,8 +28,8 @@ const GovernmentSchemes = () => {
   const schemes: GovernmentScheme[] = [
     {
       id: '1',
-      name: 'Punyashlok Ahilyadevi Holkar Shetkari Karjmafi Yojana',
-      description: 'Crop loan waiver scheme for farmers with outstanding dues',
+      name: t('schemes.item1.name'),
+      description: t('schemes.item1.desc'),
       benefits: [
         'Complete waiver of crop loans up to ₹2 lakh',
         'Covers all eligible dues till September 30, 2025',
@@ -48,8 +50,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '2',
-      name: 'Mukhya Mantri Baliraj Vij Yojana',
-      description: 'Free electricity for agricultural pumps',
+      name: t('schemes.item2.name'),
+      description: t('schemes.item2.desc'),
       benefits: [
         'Free electricity for agricultural pumps up to 7.5 HP',
         'Government bears electricity bill burden',
@@ -70,8 +72,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '3',
-      name: 'Cotton and Soybean Farmer Assistance Scheme',
-      description: 'Financial assistance for cotton and soybean farmers',
+      name: t('schemes.item3.name'),
+      description: t('schemes.item3.desc'),
       benefits: [
         '₹5,000 per hectare financial assistance',
         'Covers up to 2 hectares per farmer',
@@ -92,8 +94,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '4',
-      name: 'Gopinath Munde Farmer Welfare Scheme',
-      description: 'Emergency financial aid for distressed farmers',
+      name: t('schemes.item4.name'),
+      description: t('schemes.item4.desc'),
       benefits: [
         'Emergency financial assistance for crop failure',
         'Relief during natural calamities',
@@ -114,8 +116,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '5',
-      name: 'Farmer Accident Insurance Scheme',
-      description: 'Accident insurance coverage for farmers and agricultural laborers',
+      name: t('schemes.item5.name'),
+      description: t('schemes.item5.desc'),
       benefits: [
         'Comprehensive accident insurance coverage',
         'Extended to agricultural laborers',
@@ -136,8 +138,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '6',
-      name: 'Marathwada Water Grid Project',
-      description: 'Water management and irrigation infrastructure development',
+      name: t('schemes.item6.name'),
+      description: t('schemes.item6.desc'),
       benefits: [
         'Enhanced irrigation capacity',
         'Reliable water supply for farming',
@@ -158,8 +160,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '7',
-      name: 'Pradhan Mantri Fasal Bima Yojana',
-      description: 'Crop insurance scheme for protection against crop loss',
+      name: t('schemes.item7.name'),
+      description: t('schemes.item7.desc'),
       benefits: [
         'Insurance coverage for crop failure',
         'Protection against natural calamities',
@@ -180,8 +182,8 @@ const GovernmentSchemes = () => {
     },
     {
       id: '8',
-      name: 'Soil Health Card Scheme',
-      description: 'Free soil testing and nutrient management guidance',
+      name: t('schemes.item8.name'),
+      description: t('schemes.item8.desc'),
       benefits: [
         'Free soil testing and analysis',
         'Personalized nutrient recommendations',
@@ -203,12 +205,12 @@ const GovernmentSchemes = () => {
   ]
 
   const categories = [
-    { value: 'all', label: 'All Schemes' },
-    { value: 'loan-waiver', label: 'Loan Waiver' },
-    { value: 'subsidy', label: 'Subsidy' },
-    { value: 'insurance', label: 'Insurance' },
-    { value: 'direct-benefit', label: 'Direct Benefit' },
-    { value: 'infrastructure', label: 'Infrastructure' }
+    { value: 'all', label: t('schemes.allSchemes') },
+    { value: 'loan-waiver', label: t('schemes.loanWaiver') },
+    { value: 'subsidy', label: t('schemes.subsidy') },
+    { value: 'insurance', label: t('schemes.insurance') },
+    { value: 'direct-benefit', label: t('schemes.directBenefit') },
+    { value: 'infrastructure', label: t('schemes.infrastructure') }
   ]
 
   const filteredSchemes = schemes.filter(scheme => {
@@ -222,10 +224,10 @@ const GovernmentSchemes = () => {
     <div>
       <div className="mb-8">
         <h1 className={`text-4xl font-bold mb-2 ${themeClasses.text.primary}`}>
-          Government Schemes for Farmers
+          {t('schemes.title')}
         </h1>
         <p className={themeClasses.text.secondary}>
-          Explore and apply for various government schemes available for Maharashtra farmers
+          {t('schemes.subtitle')}
         </p>
       </div>
 
@@ -240,7 +242,7 @@ const GovernmentSchemes = () => {
       {filteredSchemes.length === 0 ? (
         <div className="mb-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center gap-3">
           <AlertCircle className="text-yellow-400" size={20} />
-          <p className="text-yellow-300">No schemes found matching your criteria</p>
+          <p className="text-yellow-300">{t('schemes.noSchemesFound')}</p>
         </div>
       ) : (
         <GovernmentSchemesList schemes={filteredSchemes} />

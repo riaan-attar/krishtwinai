@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle, Zap } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
+import { useLanguage } from '../context/LanguageContext'
 
 interface DiseaseDetectionResponse {
   disease: string
@@ -16,6 +17,7 @@ interface DiseaseDetectionResultsProps {
 }
 
 const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResultsProps) => {
+  const { t } = useLanguage()
   const themeClasses = useThemeClasses()
 
   const getConfidenceColor = (confidence: number) => {
@@ -47,7 +49,7 @@ const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResul
             </p>
             <div className="flex items-center gap-4">
               <div>
-                <p className={`text-sm ${themeClasses.text.secondary}`}>Confidence Level</p>
+                <p className={`text-sm ${themeClasses.text.secondary}`}>{t('disease.confidenceLevel')}</p>
                 <p className={`text-2xl font-bold ${getConfidenceColor(results.confidence)}`}>
                   {(results.confidence * 100).toFixed(0)}%
                 </p>
@@ -66,7 +68,7 @@ const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResul
       {/* Symptoms */}
       <div className={`${themeClasses.card} rounded-xl p-8 ${themeClasses.border} border`}>
         <h3 className={`text-2xl font-bold mb-6 ${themeClasses.text.primary}`}>
-          Symptoms to Look For
+          {t('disease.symptomsTitle')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {results.symptoms.map((symptom, index) => (
@@ -81,7 +83,7 @@ const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResul
       {/* Treatment */}
       <div className={`${themeClasses.card} rounded-xl p-8 ${themeClasses.border} border`}>
         <h3 className={`text-2xl font-bold mb-6 ${themeClasses.text.primary}`}>
-          Treatment Recommendations
+          {t('disease.treatmentTitle')}
         </h3>
         <div className="space-y-3">
           {results.treatment.map((treatment, index) => (
@@ -96,7 +98,7 @@ const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResul
       {/* Prevention */}
       <div className={`${themeClasses.card} rounded-xl p-8 ${themeClasses.border} border`}>
         <h3 className={`text-2xl font-bold mb-6 ${themeClasses.text.primary}`}>
-          Prevention Measures
+          {t('disease.preventionTitle')}
         </h3>
         <div className="space-y-3">
           {results.prevention.map((measure, index) => (
@@ -114,10 +116,10 @@ const DiseaseDetectionResults = ({ results, onNewSearch }: DiseaseDetectionResul
           onClick={onNewSearch}
           className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors"
         >
-          Analyze Another Plant
+          {t('disease.analyzeAnother')}
         </button>
         <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition-colors">
-          Save Report
+          {t('disease.saveReport')}
         </button>
       </div>
     </div>

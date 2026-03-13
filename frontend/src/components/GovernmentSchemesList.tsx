@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, CheckCircle, Users, FileText, Globe } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
+import { useLanguage } from '../context/LanguageContext'
 import { GovernmentScheme } from '../pages/GovernmentSchemes'
 
 interface GovernmentSchemesListProps {
@@ -8,6 +9,7 @@ interface GovernmentSchemesListProps {
 }
 
 const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
+  const { t } = useLanguage()
   const themeClasses = useThemeClasses()
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -25,12 +27,12 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      'loan-waiver': 'Loan Waiver',
-      'subsidy': 'Subsidy',
-      'insurance': 'Insurance',
-      'pension': 'Pension',
-      'direct-benefit': 'Direct Benefit',
-      'infrastructure': 'Infrastructure'
+      'loan-waiver': t('schemes.loanWaiver'),
+      'subsidy': t('schemes.subsidy'),
+      'insurance': t('schemes.insurance'),
+      'pension': t('schemes.pension'),
+      'direct-benefit': t('schemes.directBenefit'),
+      'infrastructure': t('schemes.infrastructure')
     }
     return labels[category] || category
   }
@@ -68,7 +70,7 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
               <div>
                 <h4 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${themeClasses.text.primary}`}>
                   <CheckCircle size={20} className="text-green-400" />
-                  Key Benefits
+                  {t('schemes.keyBenefits')}
                 </h4>
                 <ul className="space-y-2">
                   {scheme.benefits.map((benefit, index) => (
@@ -84,7 +86,7 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
               <div>
                 <h4 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${themeClasses.text.primary}`}>
                   <Users size={20} className="text-blue-400" />
-                  Eligibility Criteria
+                  {t('schemes.eligibilityCriteria')}
                 </h4>
                 <ul className="space-y-2">
                   {scheme.eligibility.map((criterion, index) => (
@@ -100,7 +102,7 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
               <div>
                 <h4 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${themeClasses.text.primary}`}>
                   <FileText size={20} className="text-orange-400" />
-                  How to Apply
+                  {t('schemes.howToApply')}
                 </h4>
                 <p className={themeClasses.text.secondary}>{scheme.applicationProcess}</p>
               </div>
@@ -109,19 +111,19 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {scheme.budget && (
                   <div className={`${themeClasses.bg} rounded-lg p-4`}>
-                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>Budget Allocation</p>
+                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>{t('schemes.budgetAllocation')}</p>
                     <p className={`font-semibold ${themeClasses.text.primary}`}>{scheme.budget}</p>
                   </div>
                 )}
                 {scheme.targetBeneficiaries && (
                   <div className={`${themeClasses.bg} rounded-lg p-4`}>
-                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>Target Beneficiaries</p>
+                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>{t('schemes.targetBeneficiaries')}</p>
                     <p className={`font-semibold ${themeClasses.text.primary}`}>{scheme.targetBeneficiaries}</p>
                   </div>
                 )}
                 {scheme.website && (
                   <div className={`${themeClasses.bg} rounded-lg p-4`}>
-                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>Official Website</p>
+                    <p className={`text-xs ${themeClasses.text.secondary} mb-1`}>{t('schemes.officialWebsite')}</p>
                     <a
                       href={scheme.website}
                       target="_blank"
@@ -129,7 +131,7 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
                       className="font-semibold text-green-400 hover:text-green-300 flex items-center gap-1"
                     >
                       <Globe size={16} />
-                      Visit
+                      {t('schemes.visit')}
                     </a>
                   </div>
                 )}
@@ -137,7 +139,7 @@ const GovernmentSchemesList = ({ schemes }: GovernmentSchemesListProps) => {
 
               {/* Action Button */}
               <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors">
-                Learn More & Apply
+                {t('schemes.learnMore')}
               </button>
             </div>
           )}

@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
+import { useLanguage } from '../context/LanguageContext'
 
 interface GovernmentSchemesFilterProps {
   categories: { value: string; label: string }[]
@@ -16,6 +17,7 @@ const GovernmentSchemesFilter = ({
   searchTerm,
   onSearchChange
 }: GovernmentSchemesFilterProps) => {
+  const { t } = useLanguage()
   const themeClasses = useThemeClasses()
 
   return (
@@ -26,7 +28,7 @@ const GovernmentSchemesFilter = ({
           <Search className={`absolute left-3 top-3 ${themeClasses.text.secondary}`} size={20} />
           <input
             type="text"
-            placeholder="Search schemes..."
+            placeholder={t('schemes.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className={`w-full pl-10 pr-4 py-3 rounded-lg ${themeClasses.input} border ${themeClasses.border} focus:outline-none focus:border-green-500 transition-colors`}
@@ -36,7 +38,7 @@ const GovernmentSchemesFilter = ({
 
       {/* Category Filter */}
       <div>
-        <p className={`text-sm font-medium mb-3 ${themeClasses.text.primary}`}>Filter by Category</p>
+        <p className={`text-sm font-medium mb-3 ${themeClasses.text.primary}`}>{t('schemes.filterByCategory')}</p>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <button

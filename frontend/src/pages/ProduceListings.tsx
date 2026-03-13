@@ -3,10 +3,12 @@ import { useState } from 'react'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { ProduceListing } from '../types/database'
 import ListProduceModal from '../components/ListProduceModal'
+import { useLanguage } from '../context/LanguageContext'
 
 const ProduceListings = () => {
   const [isListProduceOpen, setIsListProduceOpen] = useState(false)
   const { data: listings, loading } = useRealtimeData<ProduceListing>('produce_listings')
+  const { t } = useLanguage()
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -22,9 +24,9 @@ const ProduceListings = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Produce Listings</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('produceListings.title')}</h1>
           <p className="text-gray-400">
-            Browse available produce from farmers in your area
+            {t('produceListings.subtitle')}
           </p>
         </div>
         <button 
@@ -32,22 +34,22 @@ const ProduceListings = () => {
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          List Your Produce
+          {t('produceListings.listProduce')}
         </button>
       </div>
 
       {/* Listings Grid */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading listings...</div>
+        <div className="text-center py-12 text-gray-400">{t('produceListings.loadingListings')}</div>
       ) : listings.length === 0 ? (
         <div className="text-center py-12">
           <Package className="text-gray-600 mx-auto mb-4" size={64} />
-          <p className="text-gray-400 mb-4">No produce listings yet</p>
+          <p className="text-gray-400 mb-4">{t('produceListings.noListings')}</p>
           <button 
             onClick={() => setIsListProduceOpen(true)}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
           >
-            Create First Listing
+            {t('produceListings.createFirst')}
           </button>
         </div>
       ) : (
@@ -90,15 +92,15 @@ const ProduceListings = () => {
               {/* Pricing */}
               <div className="border-t border-dark-border pt-4 space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Price per {listing.unit}</span>
+                  <span className="text-gray-400">{t('produceListings.pricePer').replace('{unit}', listing.unit)}</span>
                   <span className="font-bold text-green-400">₹{listing.price_per_unit}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Available Quantity</span>
+                  <span className="text-gray-400">{t('produceListings.availableQty')}</span>
                   <span className="font-bold">{listing.quantity} {listing.unit}</span>
                 </div>
                 <div className="flex justify-between text-lg">
-                  <span className="text-gray-300 font-semibold">Total Value</span>
+                  <span className="text-gray-300 font-semibold">{t('produceListings.totalValue')}</span>
                   <span className="font-bold text-green-400">
                     ₹{(listing.quantity * listing.price_per_unit).toLocaleString()}
                   </span>
@@ -107,7 +109,7 @@ const ProduceListings = () => {
 
               {/* Contact Button */}
               <button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-colors">
-                Contact Seller
+                {t('produceListings.contactSeller')}
               </button>
             </div>
           ))}

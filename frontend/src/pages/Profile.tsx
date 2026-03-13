@@ -2,6 +2,7 @@ import { User, MapPin, Calendar, Package, MessageSquare, Edit2, Save, X, Loader,
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { useLanguage } from '../context/LanguageContext'
 
 interface UserProfile {
   id: string
@@ -23,6 +24,7 @@ interface ActivityItem {
 
 const Profile = () => {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState({ orders: 0, listings: 0, communities: 0, posts: 0 })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
@@ -92,8 +94,10 @@ const Profile = () => {
           activity.push({
             id: order.id,
             type: 'order',
-            title: `${order.status === 'delivered' ? 'Delivered' : 'Ordered'} ${order.product}`,
-            description: `${order.quantity} units`,
+            title: order.status === 'delivered' 
+              ? t('profile.activityDelivered').replace('{product}', order.product)
+              : t('profile.activityOrdered').replace('{product}', order.product),
+            description: t('profile.activityUnits').replace('{quantity}', order.quantity.toString()),
             date: new Date(order.created_at).toLocaleDateString(),
           })
         })
@@ -102,8 +106,8 @@ const Profile = () => {
           activity.push({
             id: post.id,
             type: 'post',
-            title: `Posted: ${post.title}`,
-            description: 'Community post',
+            title: t('profile.activityPosted').replace('{title}', post.title),
+            description: t('profile.activityCommPost'),
             date: new Date(post.created_at).toLocaleDateString(),
           })
         })
@@ -112,8 +116,10 @@ const Profile = () => {
           activity.push({
             id: listing.id,
             type: 'listing',
-            title: `Listed ${listing.crop_name}`,
-            description: `${listing.quantity} units at ₹${listing.price_per_unit}/unit`,
+            title: t('profile.activityListed').replace('{crop}', listing.crop_name),
+            description: t('profile.activityListedDesc')
+              .replace('{quantity}', listing.quantity.toString())
+              .replace('{price}', listing.price_per_unit.toString()),
             date: new Date(listing.created_at).toLocaleDateString(),
           })
         })
@@ -166,7 +172,7 @@ const Profile = () => {
       setUserProfile(prev => prev ? { ...prev, ...editForm } : null)
       setIsEditing(false)
     } catch (err: any) {
-      setEditError(err.message || 'Failed to save profile')
+      setEditError(err.message || t('profile.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -175,7 +181,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-400">Loading profile...</div>
+        <div className="text-gray-400">{t('profile.loading')}</div>
       </div>
     )
   }
@@ -183,21 +189,21 @@ const Profile = () => {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-400">Please log in to view your profile</div>
+        <div className="text-gray-400">{t('profile.pleaseLogin')}</div>
       </div>
     )
   }
 
   const displayName = userProfile?.name || user.email?.split('@')[0] || 'User'
-  const joinedDate = userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Recently'
+  const joinedDate = userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : t('profile.recently')
 
   return (
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Profile</h1>
+        <h1 className="text-4xl font-bold mb-2">{t('profile.title')}</h1>
         <p className="text-gray-400">
-          View and manage your public profile information.
+          {t('profile.subtitle')}
         </p>
       </div>
 
@@ -230,7 +236,7 @@ const Profile = () => {
               
               <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
                 <Calendar size={16} />
-                <span>Joined {joinedDate}</span>
+                <span>{t('profile.joined').replace('{date}', joinedDate)}</span>
               </div>
             </div>
 
@@ -248,35 +254,35 @@ const Profile = () => {
                   <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg p-2">{editError}</p>
                 )}
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Full Name</label>
+                  <label className="text-xs text-gray-400 mb-1 block">{t('profile.fullName')}</label>
                   <input
                     value={editForm.name}
                     onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
-                    placeholder="Your full name"
+                    placeholder={t('profile.fullNamePlaceholder')}
                     className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Location</label>
+                  <label className="text-xs text-gray-400 mb-1 block">{t('profile.locationLabel')}</label>
                   <input
                     value={editForm.location}
                     onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
-                    placeholder="e.g. Nashik, Maharashtra"
+                    placeholder={t('profile.locationPlaceholder')}
                     className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Bio</label>
+                  <label className="text-xs text-gray-400 mb-1 block">{t('profile.bioLabel')}</label>
                   <textarea
                     value={editForm.bio}
                     onChange={e => setEditForm(f => ({ ...f, bio: e.target.value }))}
-                    placeholder="Tell others about yourself..."
+                    placeholder={t('profile.bioPlaceholder')}
                     rows={3}
                     className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500 resize-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Avatar URL</label>
+                  <label className="text-xs text-gray-400 mb-1 block">{t('profile.avatarLabel')}</label>
                   <input
                     value={editForm.avatar_url}
                     onChange={e => setEditForm(f => ({ ...f, avatar_url: e.target.value }))}
@@ -291,7 +297,7 @@ const Profile = () => {
                     className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm"
                   >
                     {saving ? <Loader size={16} className="animate-spin" /> : <Save size={16} />}
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? t('profile.saving') : t('profile.saveChanges')}
                   </button>
                   <button
                     onClick={handleCancelEdit}
@@ -307,7 +313,7 @@ const Profile = () => {
                 className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition-colors"
               >
                 <Edit2 size={16} />
-                Edit Profile
+                {t('profile.editProfile')}
               </button>
             )}
 
@@ -315,19 +321,19 @@ const Profile = () => {
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="bg-dark-bg rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-green-400">{stats.orders}</p>
-                <p className="text-gray-400 text-xs">Orders</p>
+                <p className="text-gray-400 text-xs">{t('profile.statsOrders')}</p>
               </div>
               <div className="bg-dark-bg rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-blue-400">{stats.listings}</p>
-                <p className="text-gray-400 text-xs">Listings</p>
+                <p className="text-gray-400 text-xs">{t('profile.statsListings')}</p>
               </div>
               <div className="bg-dark-bg rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-purple-400">{stats.communities}</p>
-                <p className="text-gray-400 text-xs">Communities</p>
+                <p className="text-gray-400 text-xs">{t('profile.statsCommunities')}</p>
               </div>
               <div className="bg-dark-bg rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-orange-400">{stats.posts}</p>
-                <p className="text-gray-400 text-xs">Posts</p>
+                <p className="text-gray-400 text-xs">{t('profile.statsPosts')}</p>
               </div>
             </div>
           </div>
@@ -336,10 +342,10 @@ const Profile = () => {
         {/* Activity Section */}
         <div className="lg:col-span-2">
           <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-            <h3 className="text-2xl font-bold mb-6">Recent Activity</h3>
+            <h3 className="text-2xl font-bold mb-6">{t('profile.recentActivity')}</h3>
 
             {recentActivity.length === 0 ? (
-              <p className="text-gray-400">No recent activity yet.</p>
+              <p className="text-gray-400">{t('profile.noActivity')}</p>
             ) : (
               <div className="space-y-4">
                 {recentActivity.map((activity) => (

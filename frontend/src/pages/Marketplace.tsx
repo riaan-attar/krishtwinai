@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { Buyer as BuyerType } from '../types/database'
 import MarketplaceMap from '../components/MarketplaceMap'
+import { useLanguage } from '../context/LanguageContext'
 
 interface Buyer {
   id: string
@@ -22,6 +23,7 @@ const Marketplace = () => {
   const [selectedCrop, setSelectedCrop] = useState('wheat')
   const [sortBy, setSortBy] = useState('shortest')
   const [activeTab, setActiveTab] = useState('buyer-map')
+  const { t } = useLanguage()
 
   const { data: buyersData, loading } = useRealtimeData<BuyerType>('buyers')
 
@@ -43,9 +45,9 @@ const Marketplace = () => {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Buyer Network</h1>
+        <h1 className="text-4xl font-bold mb-2">{t('marketplace.title')}</h1>
         <p className="text-gray-400">
-          Locate verified wholesale buyers and exporters for your produce directly on the map.
+          {t('marketplace.subtitle')}
         </p>
       </div>
 
@@ -59,7 +61,7 @@ const Marketplace = () => {
               : 'text-gray-400 hover:text-white'
           }`}
         >
-          Buyer Map
+          {t('marketplace.tabMap')}
         </button>
         <button
           onClick={() => setActiveTab('live-market')}
@@ -69,24 +71,24 @@ const Marketplace = () => {
               : 'text-gray-400 hover:text-white'
           }`}
         >
-          Live Market & Buyers
+          {t('marketplace.tabLive')}
         </button>
       </div>
 
       {/* Crop Selector */}
       <div className="flex justify-between items-center mb-6">
-        <span className="text-gray-400">Selling Crop:</span>
+        <span className="text-gray-400">{t('marketplace.sellingCrop')}</span>
         <div className="relative">
           <select
             value={selectedCrop}
             onChange={(e) => setSelectedCrop(e.target.value)}
             className="px-6 py-2.5 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500 appearance-none cursor-pointer pr-10"
           >
-            <option value="wheat">Wheat (Sharbati)</option>
-            <option value="rice">Rice</option>
-            <option value="onion">Onion</option>
-            <option value="tomato">Tomato</option>
-            <option value="potato">Potato</option>
+            <option value="wheat">{t('marketplace.wheat')}</option>
+            <option value="rice">{t('marketplace.rice')}</option>
+            <option value="onion">{t('marketplace.onion')}</option>
+            <option value="tomato">{t('marketplace.tomato')}</option>
+            <option value="potato">{t('marketplace.potato')}</option>
           </select>
           <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
         </div>
@@ -99,16 +101,16 @@ const Marketplace = () => {
         <div className="lg:col-span-1">
           <div className="bg-dark-card rounded-xl p-4 border border-dark-border">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Nearby Retailers</h3>
+              <h3 className="text-lg font-bold">{t('marketplace.nearbyRetailers')}</h3>
               <div className="relative">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-1.5 bg-dark-bg text-white text-sm rounded-lg border border-dark-border outline-none appearance-none cursor-pointer pr-8"
                 >
-                  <option value="shortest">Shortest...</option>
-                  <option value="highest-profit">Highest Profit</option>
-                  <option value="best-rating">Best Rating</option>
+                  <option value="shortest">{t('marketplace.sortShortest')}</option>
+                  <option value="highest-profit">{t('marketplace.sortProfit')}</option>
+                  <option value="best-rating">{t('marketplace.sortRating')}</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
               </div>
@@ -116,9 +118,9 @@ const Marketplace = () => {
 
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
               {loading ? (
-                <div className="text-center py-8 text-gray-400">Loading buyers...</div>
+                <div className="text-center py-8 text-gray-400">{t('marketplace.loadingBuyers')}</div>
               ) : buyers.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">No buyers found</div>
+                <div className="text-center py-8 text-gray-400">{t('marketplace.noBuyers')}</div>
               ) : (
                 buyers.map((buyer) => (
                 <div
@@ -143,7 +145,7 @@ const Marketplace = () => {
                       </div>
                       {buyer.recommended && (
                         <span className="inline-block px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full mb-1">
-                          AI Recommended
+                          {t('marketplace.aiRecommended')}
                         </span>
                       )}
                       <div className="flex items-center gap-2">
@@ -159,13 +161,13 @@ const Marketplace = () => {
                   {/* Pricing Details */}
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Offered Price</span>
+                      <span className="text-gray-400">{t('marketplace.offeredPrice')}</span>
                       <span className="font-bold">₹{buyer.offeredPrice}/q</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400 flex items-center gap-1">
                         <MapPin size={14} />
-                        Transport ({buyer.distance}km)
+                        {t('marketplace.transport')} ({buyer.distance}km)
                       </span>
                       <span className="text-red-400">-₹{buyer.transportCost}/q</span>
                     </div>
@@ -176,7 +178,7 @@ const Marketplace = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-green-400 font-semibold flex items-center gap-1">
                         <TrendingUp size={16} />
-                        Net Profit
+                        {t('marketplace.netProfit')}
                       </span>
                       <span className="text-green-400 font-bold text-lg">₹{buyer.netProfit}/q</span>
                     </div>
@@ -185,7 +187,7 @@ const Marketplace = () => {
                   {/* Get Directions Button */}
                   <button className="w-full bg-dark-card hover:bg-dark-hover text-white font-semibold py-2.5 rounded-lg transition-colors border border-dark-border flex items-center justify-center gap-2">
                     <Navigation size={18} />
-                    Get Directions
+                    {t('marketplace.getDirections')}
                   </button>
                 </div>
               ))

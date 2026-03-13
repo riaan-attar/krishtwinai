@@ -42,18 +42,18 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
     { icon: TrendingUp, label: t('nav.pricePrediction'), section: 'ai-tools', path: '/price-prediction' },
     { icon: Lightbulb, label: t('nav.cropRecommendation'), section: 'ai-tools', path: '/crop-recommendation' },
     { icon: CloudSun, label: t('nav.weatherAdvice'), section: 'ai-tools', path: '/weather-advice' },
-    { icon: AlertTriangle, label: 'Disease Detection', section: 'ai-tools', path: '/disease-detection' },
-    { icon: Landmark, label: 'Government Schemes', section: 'ai-tools', path: '/government-schemes' },
+    { icon: AlertTriangle, label: t('nav.diseaseDetection'), section: 'ai-tools', path: '/disease-detection' },
+    { icon: Landmark, label: t('nav.governmentSchemes'), section: 'ai-tools', path: '/government-schemes' },
     { icon: ShoppingCart, label: t('nav.marketplace'), section: 'platform', path: '/marketplace' },
     { icon: Users, label: t('nav.community'), section: 'platform', path: '/community' },
     { icon: Package, label: t('nav.orders'), section: 'platform', path: '/orders' },
-    { icon: User, label: 'Profile & Settings', section: 'account', path: '/profile' },
+    { icon: User, label: t('nav.profileSettings'), section: 'account', path: '/profile' },
   ]
 
   const sections = {
-    'ai-tools': 'AI Tools',
-    'platform': 'Platform',
-    'account': 'Account'
+    'ai-tools': t('nav.sectionAiTools'),
+    'platform': t('nav.sectionPlatform'),
+    'account': t('nav.sectionAccount')
   }
 
   return (

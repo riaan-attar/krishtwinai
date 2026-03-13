@@ -71,12 +71,12 @@ const Settings = () => {
             <div className="space-y-6">
               {/* Profile Section */}
               <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-                <h2 className="text-2xl font-bold mb-2">Profile</h2>
-                <p className="text-gray-400 mb-6">This is how others will see you on the site.</p>
+                <h2 className="text-2xl font-bold mb-2">{t('settings.profile')}</h2>
+                <p className="text-gray-400 mb-6">{t('settings.profileSectionDesc')}</p>
 
                 {/* Profile Picture */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-3">Profile Picture</label>
+                  <label className="block text-sm font-medium mb-3">{t('settings.profilePicture')}</label>
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center">
@@ -91,7 +91,7 @@ const Settings = () => {
 
                 {/* Username */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">Username</label>
+                  <label className="block text-sm font-medium mb-2">{t('settings.username')}</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -105,7 +105,7 @@ const Settings = () => {
 
                 {/* Display Name */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">Display Name</label>
+                  <label className="block text-sm font-medium mb-2">{t('settings.displayName')}</label>
                   <input
                     type="text"
                     value={displayName}
@@ -117,7 +117,7 @@ const Settings = () => {
 
                 {/* Default Region */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">Default Region</label>
+                  <label className="block text-sm font-medium mb-2">{t('settings.defaultRegion')}</label>
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -141,12 +141,12 @@ const Settings = () => {
 
               {/* Account Section */}
               <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-                <h2 className="text-2xl font-bold mb-2">Account</h2>
-                <p className="text-gray-400 mb-6">Manage your account security and identification.</p>
+                <h2 className="text-2xl font-bold mb-2">{t('settings.account')}</h2>
+                <p className="text-gray-400 mb-6">{t('settings.accountDesc')}</p>
 
                 {/* User ID */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">User ID</label>
+                  <label className="block text-sm font-medium mb-2">{t('settings.userId')}</label>
                   <div className="relative">
                     <input
                       type="text"
@@ -157,7 +157,7 @@ const Settings = () => {
                     <button
                       onClick={handleCopyUserId}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                      title="Copy User ID"
+                      title={t('settings.userIdCopied')}
                     >
                       <Copy size={18} />
                     </button>
@@ -166,9 +166,9 @@ const Settings = () => {
 
                 {/* Email Address */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email Address</label>
+                  <label className="block text-sm font-medium mb-2">{t('settings.emailAddress')}</label>
                   <p className="text-gray-400 text-sm mb-2">
-                    Your email address is {email}. This cannot be changed.
+                    {t('settings.emailDesc').replace('{email}', email)}
                   </p>
                   <input
                     type="email"
@@ -183,17 +183,17 @@ const Settings = () => {
 
           {activeTab === 'appearance' && (
             <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-              <h2 className="text-2xl font-bold mb-2">Appearance</h2>
-              <p className="text-gray-400">Customize the look and feel of the application.</p>
-              <div className="mt-6 text-gray-500">Appearance settings coming soon...</div>
+              <h2 className="text-2xl font-bold mb-2">{t('settings.appearance')}</h2>
+              <p className="text-gray-400">{t('settings.appearanceDesc')}</p>
+              <div className="mt-6 text-gray-500">{t('settings.appearanceSoon')}</div>
             </div>
           )}
 
           {activeTab === 'notifications' && (
             <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-              <h2 className="text-2xl font-bold mb-2">Notifications</h2>
-              <p className="text-gray-400">Manage your notification preferences.</p>
-              <div className="mt-6 text-gray-500">Notification settings coming soon...</div>
+              <h2 className="text-2xl font-bold mb-2">{t('settings.notifications')}</h2>
+              <p className="text-gray-400">{t('settings.notificationsDesc')}</p>
+              <div className="mt-6 text-gray-500">{t('settings.notificationsSoon')}</div>
             </div>
           )}
 
@@ -229,7 +229,7 @@ const Settings = () => {
               
               <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                 <p className="text-blue-400 text-sm">
-                  <strong>Note:</strong> Language changes will be applied immediately. Some content may require a page refresh to fully update.
+                  <strong>{t('settings.note')}</strong> {t('settings.translationNote')}
                 </p>
               </div>
             </div>
@@ -237,9 +237,9 @@ const Settings = () => {
 
           {activeTab === 'my-orders' && (
             <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-              <h2 className="text-2xl font-bold mb-2">My Orders</h2>
-              <p className="text-gray-400">View and manage your order history.</p>
-              <div className="mt-6 text-gray-500">Order history coming soon...</div>
+              <h2 className="text-2xl font-bold mb-2">{t('settings.myOrders')}</h2>
+              <p className="text-gray-400">{t('settings.ordersDesc')}</p>
+              <div className="mt-6 text-gray-500">{t('settings.ordersSoon')}</div>
             </div>
           )}
         </div>
