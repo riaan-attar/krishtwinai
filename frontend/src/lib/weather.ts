@@ -135,51 +135,101 @@ const reverseGeocode = async (lat: number, lon: number) => {
   return {}
 }
 
-// Get weather data using OpenWeatherMap API
+// Get weather data using WeatherAPI.com
 export const getWeatherData = async (location: LocationData): Promise<WeatherData> => {
+  const weatherApiKey = import.meta.env.VITE_WEATHERAPI_KEY
+
+  // If no API key is configured, fall back to mock data
+  if (!weatherApiKey) {
+    console.warn('VITE_WEATHERAPI_KEY not set — using mock weather data')
+    return getMockWeatherData(location)
+  }
+
   try {
-    // For demo purposes, we'll use mock data
-    // In production, you would use a real weather API like OpenWeatherMap
-    const mockWeatherData: WeatherData = {
+    const q = `${location.latitude},${location.longitude}`
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${q}&days=3&aqi=no&alerts=no`
+
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}))
+      throw new Error(errData?.error?.message || `WeatherAPI error ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    const current = data.current
+    const [today, tomorrow, dayAfter] = data.forecast.forecastday
+
+    // Fill in location from API response if available
+    const apiLoc = data.location
+    if (apiLoc) {
+      location.city = location.city || apiLoc.name
+      location.state = location.state || apiLoc.region
+      location.country = location.country || apiLoc.country
+    }
+
+    return {
       location,
       current: {
-        temperature: Math.round(20 + Math.random() * 15), // 20-35°C
-        humidity: Math.round(40 + Math.random() * 40), // 40-80%
-        windSpeed: Math.round(5 + Math.random() * 15), // 5-20 km/h
-        condition: ['Clear', 'Partly Cloudy', 'Cloudy', 'Light Rain', 'Sunny'][Math.floor(Math.random() * 5)],
-        description: 'Pleasant weather conditions',
-        pressure: Math.round(1000 + Math.random() * 50), // 1000-1050 hPa
-        visibility: Math.round(8 + Math.random() * 7), // 8-15 km
-        uvIndex: Math.round(3 + Math.random() * 8), // 3-11
-        feelsLike: Math.round(22 + Math.random() * 13) // 22-35°C
+        temperature: current.temp_c,
+        humidity: current.humidity,
+        windSpeed: current.wind_kph,
+        condition: current.condition.text,
+        description: current.condition.text,
+        pressure: current.pressure_mb,
+        visibility: current.vis_km,
+        uvIndex: current.uv,
+        feelsLike: current.feelslike_c,
       },
       forecast: {
         today: {
-          high: Math.round(25 + Math.random() * 10),
-          low: Math.round(15 + Math.random() * 8),
-          rainChance: Math.round(Math.random() * 60),
-          condition: 'Partly Cloudy'
+          high: today.day.maxtemp_c,
+          low: today.day.mintemp_c,
+          rainChance: today.day.daily_chance_of_rain,
+          condition: today.day.condition.text,
         },
         tomorrow: {
-          high: Math.round(24 + Math.random() * 12),
-          low: Math.round(16 + Math.random() * 7),
-          rainChance: Math.round(Math.random() * 80),
-          condition: 'Light Rain'
+          high: tomorrow.day.maxtemp_c,
+          low: tomorrow.day.mintemp_c,
+          rainChance: tomorrow.day.daily_chance_of_rain,
+          condition: tomorrow.day.condition.text,
         },
         dayAfter: {
-          high: Math.round(26 + Math.random() * 9),
-          low: Math.round(17 + Math.random() * 6),
-          rainChance: Math.round(Math.random() * 40),
-          condition: 'Sunny'
-        }
-      }
+          high: dayAfter.day.maxtemp_c,
+          low: dayAfter.day.mintemp_c,
+          rainChance: dayAfter.day.daily_chance_of_rain,
+          condition: dayAfter.day.condition.text,
+        },
+      },
     }
-
-    return mockWeatherData
   } catch (error) {
-    throw new Error('Failed to fetch weather data')
+    console.error('WeatherAPI.com fetch failed, using mock data:', error)
+    return getMockWeatherData(location)
   }
 }
+
+// Mock fallback (used when API key is absent or call fails)
+const getMockWeatherData = (location: LocationData): WeatherData => ({
+  location,
+  current: {
+    temperature: Math.round(20 + Math.random() * 15),
+    humidity: Math.round(40 + Math.random() * 40),
+    windSpeed: Math.round(5 + Math.random() * 15),
+    condition: ['Clear', 'Partly Cloudy', 'Cloudy', 'Light Rain', 'Sunny'][Math.floor(Math.random() * 5)],
+    description: 'Pleasant weather conditions',
+    pressure: Math.round(1000 + Math.random() * 50),
+    visibility: Math.round(8 + Math.random() * 7),
+    uvIndex: Math.round(3 + Math.random() * 8),
+    feelsLike: Math.round(22 + Math.random() * 13),
+  },
+  forecast: {
+    today: { high: Math.round(25 + Math.random() * 10), low: Math.round(15 + Math.random() * 8), rainChance: Math.round(Math.random() * 60), condition: 'Partly Cloudy' },
+    tomorrow: { high: Math.round(24 + Math.random() * 12), low: Math.round(16 + Math.random() * 7), rainChance: Math.round(Math.random() * 80), condition: 'Light Rain' },
+    dayAfter: { high: Math.round(26 + Math.random() * 9), low: Math.round(17 + Math.random() * 6), rainChance: Math.round(Math.random() * 40), condition: 'Sunny' },
+  },
+})
+
 
 // Generate farming advice using Gemini AI
 export const getFarmingAdvice = async (weather: WeatherData): Promise<FarmingAdvice> => {
