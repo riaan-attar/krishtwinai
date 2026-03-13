@@ -1,57 +1,166 @@
-import { Plus, Calendar, Globe, MessageSquare, Rss, MoreHorizontal } from 'lucide-react'
+import { Plus, Calendar, Globe, MessageSquare, Rss, MoreHorizontal, Send, Loader } from 'lucide-react'
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import CreatePostModal from '../components/CreatePostModal'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 interface CommunityData {
-  [key: string]: {
+  id: string
+  name: string
+  description: string
+  image: string
+  created_at: string
+  slug: string
+}
+
+interface Post {
+  id: string
+  title: string
+  content: string
+  user_id: string
+  created_at: string
+  likes: number
+  comments_count: number
+  profiles: {
     name: string
-    description: string
-    image: string
-    created: string
-    posts: number
+    avatar_url: string
   }
 }
 
+
+
 const CommunityDetail = () => {
   const { communityId } = useParams()
+  const { user } = useAuth()
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
+  
+  const [community, setCommunity] = useState<CommunityData | null>(null)
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const communities: CommunityData = {
-    'jalgaon-farmers': {
-      name: 'c/Jalgaon Farmers',
-      description: 'A community for farmers in Jalgaon to discuss Banana, Cotton, and local market trends.',
-      image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200&h=300&fit=crop',
-      created: 'March 10th, 2026 10:37 PM',
-      posts: 142
-    },
-    'nashik-grape-growers': {
-      name: 'c/Nashik Grape Growers',
-      description: 'Connect with vineyards, export specialists, and vegetable growers in Nashik region.',
-      image: 'https://images.unsplash.com/photo-1596363505729-4190a9506133?w=1200&h=300&fit=crop',
-      created: 'March 10th, 2026 10:37 PM',
-      posts: 89
-    },
-    'pune-agri-hub': {
-      name: 'c/Pune Agri-Hub',
-      description: 'Discuss modern farming techniques, greenhouse setups, and direct-to-consumer sales.',
-      image: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=300&fit=crop',
-      created: 'March 10th, 2026 10:37 PM',
-      posts: 256
-    },
-    'nagpur-orange-city': {
-      name: 'c/Nagpur Orange City',
-      description: 'Dedicated to citrus farmers, cotton growers, and central Maharashtra agriculture.',
-      image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&h=300&fit=crop',
-      created: 'March 10th, 2026 10:37 PM',
-      posts: 115
+  // Chat/Quick Post specific states
+  const [message, setMessage] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  
+  const postsEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    postsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    const fetchCommunityData = async () => {
+      setLoading(true)
+      try {
+        // Fetch community details
+        const { data: commData, error: commError } = await supabase
+          .from('communities')
+          .select('*')
+          .eq('slug', communityId)
+          .single()
+
+        if (commError) throw commError
+        setCommunity(commData)
+
+        // Fetch posts for this community
+        if (commData) {
+          const { data: postsData, error: postsError } = await supabase
+            .from('posts')
+            .select(`
+              *,
+              profiles:user_id (name, avatar_url)
+            `)
+            .eq('community_id', commData.id)
+            .order('created_at', { ascending: true }) // Ascending makes it look more like chat thread
+
+          if (postsError) throw postsError
+          setPosts(postsData || [])
+          setTimeout(scrollToBottom, 500) // scroll to bottom on initial load
+        }
+      } catch (error) {
+        console.error('Error fetching community data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (communityId) {
+      fetchCommunityData()
+    }
+  }, [communityId])
+
+  // Realtime Subscription
+  useEffect(() => {
+    if (!community) return
+
+    const channel = supabase
+      .channel(`public:posts:community_id=eq.${community.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'posts',
+          filter: `community_id=eq.${community.id}`
+        },
+        async (payload) => {
+          // Fetch the profile for the new post
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('name, avatar_url')
+            .eq('id', payload.new.user_id)
+            .single()
+
+          const newPost = {
+            ...payload.new,
+            profiles: profileData || { name: 'Anonymous User', avatar_url: '' }
+          } as Post
+
+          setPosts(currentData => [...currentData, newPost])
+          setTimeout(scrollToBottom, 100)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [community])
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!message.trim() || !user || !community) return
+
+    setIsSending(true)
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .insert({
+          community_id: community.id,
+          user_id: user.id,
+          title: `Message from ${user.email?.split('@')[0] || 'User'}`,
+          content: message,
+          likes: 0,
+          comments_count: 0
+        })
+
+      if (error) throw error
+      setMessage('')
+    } catch (err) {
+      console.error('Failed to send message:', err)
+      alert('Failed to send message.')
+    } finally {
+      setIsSending(false)
     }
   }
 
-  const community = communities[communityId || 'jalgaon-farmers']
+  if (loading) {
+    return <div className="text-center py-20 text-gray-400">Loading community...</div>
+  }
 
   if (!community) {
-    return <div>Community not found</div>
+    return <div className="text-center py-20 text-gray-400">Community not found</div>
   }
 
   return (
@@ -95,13 +204,80 @@ const CommunityDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content Area */}
-        <div className="lg:col-span-2">
-          <div className="bg-gray-100 rounded-xl p-12 text-center">
-            <div className="text-6xl mb-4">💬</div>
-            <p className="text-gray-500">
-              Be the first to say hello to the {communityId?.replace('-', '-')} community!
-            </p>
+        {/* Main Content Area / Chat Thread */}
+        <div className="lg:col-span-2 flex flex-col h-[500px] bg-dark-bg rounded-xl border border-dark-border overflow-hidden">
+          <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-dark-bg custom-scrollbar">
+            {posts.length === 0 ? (
+              <div className="bg-dark-card border border-dark-border rounded-xl p-12 text-center my-auto">
+                <div className="text-6xl mb-4">💬</div>
+                <p className="text-gray-500">
+                  Be the first to say hello to the {community.name} community!
+                </p>
+              </div>
+            ) : (
+              posts.map(post => {
+                const isMine = user?.id === post.user_id;
+                
+                return (
+                  <div key={post.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                    {!isMine && (
+                      <div className="w-8 h-8 rounded-full bg-dark-card border border-dark-border overflow-hidden flex-shrink-0 mr-3 mt-1">
+                        {post.profiles?.avatar_url ? (
+                          <img src={post.profiles.avatar_url} alt={post.profiles.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-400">
+                            {post.profiles?.name?.charAt(0) || 'U'}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div className={`max-w-[75%] p-4 ${isMine ? 'bg-dark-card/60 border border-green-500/30 rounded-2xl rounded-tr-sm' : 'bg-dark-card border border-dark-border rounded-2xl rounded-tl-sm'}`}>
+                      {!isMine && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-sm text-green-400">{post.profiles?.name || 'Anonymous User'}</span>
+                          <span className="text-xs text-gray-500">{new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                      )}
+                      
+                      {/* Only show title if it doesn't look like an auto-generated chat message title */}
+                      {!post.title.startsWith('Message from') && (
+                         <h3 className="font-bold mb-1 text-sm text-white">{post.title}</h3>
+                      )}
+                      <p className={`text-sm ${isMine ? 'text-gray-200' : 'text-gray-300'}`}>{post.content}</p>
+                      
+                      {isMine && (
+                         <div className="text-right mt-1">
+                           <span className="text-[10px] text-gray-500">{new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                         </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })
+            )}
+            <div ref={postsEndRef} />
+          </div>
+
+          {/* Quick Chat Input box */}
+          <div className="mt-4 bg-dark-bg rounded-xl border border-dark-border p-3">
+            <form onSubmit={handleSendMessage} className="flex gap-3">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={user ? "Message community..." : "Log in to join the conversation"}
+                className="flex-1 bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all"
+                disabled={!user || isSending}
+              />
+              <button 
+                type="submit" 
+                disabled={!user || !message.trim() || isSending}
+                className="bg-green-600/90 hover:bg-green-500 disabled:bg-dark-card disabled:text-gray-600 disabled:border disabled:border-dark-border text-white p-3 rounded-lg transition-all flex items-center justify-center min-w-[52px]"
+              >
+                {isSending ? <Loader size={20} className="animate-spin" /> : <Send size={20} />}
+              </button>
+            </form>
           </div>
         </div>
 
@@ -115,7 +291,7 @@ const CommunityDetail = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-gray-400">
                 <Calendar size={18} />
-                <span className="text-sm">Created {community.created}</span>
+                <span className="text-sm">Created {new Date(community.created_at).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Globe size={18} />
@@ -143,7 +319,7 @@ const CommunityDetail = () => {
       <CreatePostModal 
         isOpen={isCreatePostOpen} 
         onClose={() => setIsCreatePostOpen(false)}
-        communityName={community.name}
+        communityName={community.id} // use internal community ID instead of name for creating logic
       />
 
       {/* Floating Action Button */}

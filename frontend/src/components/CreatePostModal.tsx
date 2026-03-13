@@ -1,5 +1,13 @@
-import { X, Bold, Italic, Quote, Code, Image as ImageIcon, ChevronDown } from 'lucide-react'
-import { FormEvent, useState } from 'react'
+import { X, Bold, Italic, Quote, Code, Image as ImageIcon, ChevronDown, Loader } from 'lucide-react'
+import { FormEvent, useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
+
+interface CommunityOption {
+  id: string
+  name: string
+  slug: string
+}
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -8,17 +16,74 @@ interface CreatePostModalProps {
 }
 
 const CreatePostModal = ({ isOpen, onClose, communityName }: CreatePostModalProps) => {
+  const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [selectedCommunity, setSelectedCommunity] = useState(communityName || '')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Real communities fetched from DB
+  const [communities, setCommunities] = useState<CommunityOption[]>([])
+
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      const { data, error } = await supabase
+        .from('communities')
+        .select('id, name, slug')
+      
+      if (!error && data) {
+        setCommunities(data)
+        
+        // If a communityName was passed but not its slug, try to set the correct value. 
+        // For simplicity, we just bind the slug.
+      }
+    }
+    
+    if (isOpen) {
+      fetchCommunities()
+    }
+  }, [isOpen])
 
   if (!isOpen) return null
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    console.log('Creating post:', { title, content, community: selectedCommunity })
-    // Add your post creation logic here
-    onClose()
+    if (!user) {
+      setError('You must be logged in to post.')
+      return
+    }
+    if (!selectedCommunity || !title || !content) {
+      setError('Please fill in all fields.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const { error: insertError } = await supabase
+        .from('posts')
+        .insert({
+          community_id: selectedCommunity,
+          user_id: user.id,
+          title,
+          content,
+          likes: 0,
+          comments_count: 0
+        })
+
+      if (insertError) throw insertError
+
+      setTitle('')
+      setContent('')
+      onClose()
+    } catch (err: any) {
+      console.error('Error creating post:', err)
+      setError(err.message || 'Failed to create post')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -42,6 +107,12 @@ const CreatePostModal = ({ isOpen, onClose, communityName }: CreatePostModalProp
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
           {/* Community Selector */}
           <div>
             <label className="block text-sm font-medium mb-2">Community</label>
@@ -50,12 +121,12 @@ const CreatePostModal = ({ isOpen, onClose, communityName }: CreatePostModalProp
                 value={selectedCommunity}
                 onChange={(e) => setSelectedCommunity(e.target.value)}
                 className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500 appearance-none cursor-pointer"
+                disabled={loading}
               >
                 <option value="">Select a community</option>
-                <option value="jalgaon-farmers">c/Jalgaon Farmers</option>
-                <option value="nashik-grape-growers">c/Nashik Grape Growers</option>
-                <option value="pune-agri-hub">c/Pune Agri-Hub</option>
-                <option value="nagpur-orange-city">c/Nagpur Orange City</option>
+                {communities.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
             </div>
@@ -132,9 +203,17 @@ const CreatePostModal = ({ isOpen, onClose, communityName }: CreatePostModalProp
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+              disabled={loading}
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Post
+              {loading ? (
+                <>
+                  <Loader size={20} className="animate-spin" />
+                  Posting...
+                </>
+              ) : (
+                'Post'
+              )}
             </button>
           </div>
         </form>

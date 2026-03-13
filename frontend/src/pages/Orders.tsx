@@ -25,7 +25,43 @@ const Orders = () => {
     value: user?.id
   })
 
-  const orders: Order[] = ordersData.map(order => ({
+  const sampleOrders: Order[] = [
+    {
+      id: 'sample-1',
+      orderNumber: 'MH-2026-001',
+      placedDate: '10 Mar 2026',
+      status: 'delivered',
+      product: 'Wheat (Sharbati)',
+      location: 'Nashik APMC, Maharashtra',
+      buyer: 'Agro Fresh Traders',
+      quantity: '50 Quintal',
+      totalPayout: '₹1,12,500'
+    },
+    {
+      id: 'sample-2',
+      orderNumber: 'MH-2026-002',
+      placedDate: '12 Mar 2026',
+      status: 'in-transit',
+      product: 'Onion (Red)',
+      location: 'Lasalgaon Mandi, Nashik',
+      buyer: 'Sunrise Export House',
+      quantity: '30 Quintal',
+      totalPayout: '₹54,000'
+    },
+    {
+      id: 'sample-3',
+      orderNumber: 'MH-2026-003',
+      placedDate: '13 Mar 2026',
+      status: 'ordered',
+      product: 'Tomato',
+      location: 'Pune APMC, Maharashtra',
+      buyer: 'Metro Wholesale Pvt. Ltd.',
+      quantity: '20 Quintal',
+      totalPayout: '₹28,000'
+    }
+  ]
+
+  const orders: Order[] = ordersData.length > 0 ? ordersData.map(order => ({
     id: order.id,
     orderNumber: order.order_number,
     placedDate: new Date(order.placed_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -35,7 +71,7 @@ const Orders = () => {
     buyer: order.buyer_name,
     quantity: order.quantity,
     totalPayout: order.total_payout
-  }))
+  })) : sampleOrders
 
   const getStatusBadge = (status: string) => {
     switch (status) {

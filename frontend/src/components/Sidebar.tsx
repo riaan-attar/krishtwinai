@@ -9,7 +9,6 @@ import {
   Users, 
   Package, 
   User, 
-  Settings, 
   LogOut,
   Leaf
 } from 'lucide-react'
@@ -48,8 +47,7 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
     { icon: ShoppingCart, label: t('nav.marketplace'), section: 'platform', path: '/marketplace' },
     { icon: Users, label: t('nav.community'), section: 'platform', path: '/community' },
     { icon: Package, label: t('nav.orders'), section: 'platform', path: '/orders' },
-    { icon: User, label: t('nav.profile'), section: 'account', path: '/profile' },
-    { icon: Settings, label: t('nav.settings'), section: 'account', path: '/settings' },
+    { icon: User, label: 'Profile & Settings', section: 'account', path: '/profile' },
   ]
 
   const sections = {

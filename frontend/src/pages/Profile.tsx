@@ -1,4 +1,4 @@
-import { Plus, User, MapPin, Calendar, Package, MessageSquare } from 'lucide-react'
+import { User, MapPin, Calendar, Package, MessageSquare, Edit2, Save, X, Loader, ShoppingBag } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
@@ -27,6 +27,12 @@ const Profile = () => {
   const [stats, setStats] = useState({ orders: 0, listings: 0, communities: 0, posts: 0 })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Edit mode states
+  const [isEditing, setIsEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [editForm, setEditForm] = useState({ name: '', location: '', bio: '', avatar_url: '' })
+  const [editError, setEditError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -123,6 +129,49 @@ const Profile = () => {
     fetchProfileData()
   }, [user])
 
+  const handleEdit = () => {
+    setEditForm({
+      name: userProfile?.name || '',
+      location: userProfile?.location || '',
+      bio: (userProfile as any)?.bio || '',
+      avatar_url: userProfile?.avatar_url || ''
+    })
+    setEditError(null)
+    setIsEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setEditError(null)
+  }
+
+  const handleSaveProfile = async () => {
+    if (!user) return
+    setSaving(true)
+    setEditError(null)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          name: editForm.name,
+          location: editForm.location,
+          bio: editForm.bio,
+          avatar_url: editForm.avatar_url,
+          updated_at: new Date().toISOString()
+        })
+
+      if (error) throw error
+
+      setUserProfile(prev => prev ? { ...prev, ...editForm } : null)
+      setIsEditing(false)
+    } catch (err: any) {
+      setEditError(err.message || 'Failed to save profile')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -186,14 +235,84 @@ const Profile = () => {
             </div>
 
             {/* Bio */}
-            {userProfile?.bio && (
+            {userProfile?.bio && !isEditing && (
               <div className="mb-6">
-                <p className="text-gray-300 text-sm text-center">{userProfile.bio}</p>
+                <p className="text-gray-300 text-sm text-center">{(userProfile as any).bio}</p>
               </div>
             )}
 
+            {/* Edit Form */}
+            {isEditing ? (
+              <div className="mb-6 space-y-3">
+                {editError && (
+                  <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg p-2">{editError}</p>
+                )}
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Full Name</label>
+                  <input
+                    value={editForm.name}
+                    onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="Your full name"
+                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Location</label>
+                  <input
+                    value={editForm.location}
+                    onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
+                    placeholder="e.g. Nashik, Maharashtra"
+                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Bio</label>
+                  <textarea
+                    value={editForm.bio}
+                    onChange={e => setEditForm(f => ({ ...f, bio: e.target.value }))}
+                    placeholder="Tell others about yourself..."
+                    rows={3}
+                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Avatar URL</label>
+                  <input
+                    value={editForm.avatar_url}
+                    onChange={e => setEditForm(f => ({ ...f, avatar_url: e.target.value }))}
+                    placeholder="https://..."
+                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
+                  />
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={saving}
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm"
+                  >
+                    {saving ? <Loader size={16} className="animate-spin" /> : <Save size={16} />}
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="px-4 py-2.5 bg-dark-hover border border-dark-border hover:border-gray-500 text-gray-300 rounded-lg transition-all"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={handleEdit}
+                className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition-colors"
+              >
+                <Edit2 size={16} />
+                Edit Profile
+              </button>
+            )}
+
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="bg-dark-bg rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-green-400">{stats.orders}</p>
                 <p className="text-gray-400 text-xs">Orders</p>
@@ -211,11 +330,6 @@ const Profile = () => {
                 <p className="text-gray-400 text-xs">Posts</p>
               </div>
             </div>
-
-            {/* Edit Profile Button */}
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors">
-              Edit Profile
-            </button>
           </div>
         </div>
 
@@ -237,7 +351,7 @@ const Profile = () => {
                       <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
                         {activity.type === 'order' && <Package size={20} className="text-green-400" />}
                         {activity.type === 'post' && <MessageSquare size={20} className="text-blue-400" />}
-                        {activity.type === 'listing' && <Plus size={20} className="text-purple-400" />}
+                        {activity.type === 'listing' && <ShoppingBag size={20} className="text-purple-400" />}
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold mb-1">{activity.title}</h4>
@@ -253,10 +367,6 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <button className="fixed bottom-6 right-6 w-14 h-14 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110">
-        <Plus className="text-white" size={28} />
-      </button>
     </div>
   )
 }

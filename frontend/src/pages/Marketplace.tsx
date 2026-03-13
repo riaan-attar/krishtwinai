@@ -2,6 +2,7 @@ import { Plus, MapPin, Star, TrendingUp, Navigation, ChevronDown } from 'lucide-
 import { useState } from 'react'
 import { useRealtimeData } from '../hooks/useRealtimeData'
 import { Buyer as BuyerType } from '../types/database'
+import MarketplaceMap from '../components/MarketplaceMap'
 
 interface Buyer {
   id: string
@@ -91,22 +92,7 @@ const Marketplace = () => {
         </div>
       </div>
 
-      {/* Discover Section */}
-      <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl p-6 border border-green-500/30 mb-6">
-        <div className="flex items-start gap-4">
-          <MapPin className="text-green-400 flex-shrink-0 mt-1" size={32} />
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-green-400 mb-2">Discover Buyers & Retailers</h2>
-            <p className="text-gray-300 mb-4">
-              Detect your location to find the nearest and most profitable buyers for your crop using live OpenStreetMap tracking.
-            </p>
-            <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-              <Navigation size={18} />
-              Detect My Location
-            </button>
-          </div>
-        </div>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Buyers List */}
@@ -208,15 +194,9 @@ const Marketplace = () => {
           </div>
         </div>
 
-        {/* Map Placeholder */}
+        {/* Google Map - Maharashtra */}
         <div className="lg:col-span-2">
-          <div className="bg-dark-card rounded-xl p-6 border border-dark-border h-full min-h-[600px] flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="text-gray-600 mx-auto mb-4" size={64} />
-              <p className="text-gray-400 text-lg">Interactive Map View</p>
-              <p className="text-gray-500 text-sm mt-2">Map integration coming soon...</p>
-            </div>
-          </div>
+          <MarketplaceMap selectedCrop={selectedCrop} />
         </div>
       </div>
 
