@@ -22,14 +22,39 @@ ChartJS.register(
   Filler
 )
 
-const PriceChart = () => {
-  const months = ['03 Mar', '04 Mar', '05 Mar', '06 Mar', '07 Mar', '08 Mar', '09 Mar', 'Today', '11 Mar', '12 Mar', '13 Mar', '14 Mar', '15 Mar', '16 Mar', '17 Mar']
-  
-  const historicalData = [2500, 2480, 2550, 2490, 2530, 2520, 2470, null, null, null, null, null, null, null, null]
-  const predictedData = [null, null, null, null, null, null, null, 2545, 2520, 2560, 2540, 2530, 2550, 2560, 2540]
+interface Prediction {
+  date: string;
+  predicted_price: number;
+}
+
+interface PriceChartProps {
+  predictions?: Prediction[];
+}
+
+const PriceChart = ({ predictions = [] }: PriceChartProps) => {
+  // Try to use predictions, otherwise fallback to placeholder data for visual filler
+  let labels = ['03 Mar', '04 Mar', '05 Mar', '06 Mar', '07 Mar', '08 Mar', '09 Mar', 'Today', '11 Mar', '12 Mar', '13 Mar', '14 Mar', '15 Mar', '16 Mar', '17 Mar'];
+  let historicalData: (number | null)[] = [2500, 2480, 2550, 2490, 2530, 2520, 2470, null, null, null, null, null, null, null, null];
+  let predictedData: (number | null)[] = [null, null, null, null, null, null, null, 2545, 2520, 2560, 2540, 2530, 2550, 2560, 2540];
+
+  if (predictions.length > 0) {
+    // dynamically build from predictions
+    labels = ['Today'];
+    historicalData = [predictions[0]?.predicted_price || 0]; // Assume today's prediction is close to current historical
+    predictedData = [predictions[0]?.predicted_price || 0]; // Connecting point
+    
+    predictions.forEach((p) => {
+      // Add a small date formatter if needed, but the backend gives YYYY-MM-DD
+      const dateParts = p.date.split('-');
+      const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}` : p.date;
+      labels.push(formattedDate);
+      historicalData.push(null);
+      predictedData.push(p.predicted_price);
+    });
+  }
 
   const data = {
-    labels: months,
+    labels: labels,
     datasets: [
       {
         label: 'Historical',
@@ -105,14 +130,11 @@ const PriceChart = () => {
     scales: {
       y: {
         beginAtZero: false,
-        min: 0,
-        max: 2600,
         ticks: {
           color: '#9ca3af',
           callback: function(value: any) {
             return '₹' + value
           },
-          stepSize: 650,
         },
         grid: {
           color: '#f3f4f6',

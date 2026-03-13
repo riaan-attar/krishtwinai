@@ -1,11 +1,56 @@
-import { Plus, TrendingDown } from 'lucide-react'
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import ProfitAnalyzer from '../components/ProfitAnalyzer'
 import PriceChart from '../components/PriceChart'
 
+interface Prediction {
+  date: string;
+  predicted_price: number;
+}
+
 const PricePrediction = () => {
-  const handleAnalyze = (data: { crop: string; mandi: string; quantity: number }) => {
-    console.log('Analyzing:', data)
-    // Add your prediction logic here
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAnalyze = async (data: { crop: string; mandi: string; }) => {
+    console.log('Analyzing:', data);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Create a date object for today
+      const today = new Date();
+      // Format to YYYY-MM-DD
+      const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
+      const payload = {
+        market: data.mandi,
+        commodity: data.crop,
+        today_date: formattedDate
+      };
+
+      const response = await fetch('http://localhost:5001/predict/price', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to fetch predictions');
+      }
+
+      const responseData = await response.json();
+      setPredictions(responseData.predictions.slice(0, 4)); // Only taking the first 4 to match the prompt request
+    } catch (err: any) {
+      console.error('Prediction error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred fetching predictions.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -18,38 +63,42 @@ const PricePrediction = () => {
       </div>
 
       <ProfitAnalyzer onAnalyze={handleAnalyze} />
-      <PriceChart />
+      <PriceChart predictions={predictions} />
+
+      {error && (
+        <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400">
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className="mb-6 text-center text-gray-500">
+          Loading predictions...
+        </div>
+      )}
 
       {/* Recommendation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-6">
-        {/* Sell Today Card */}
-        <div className="bg-white dark:bg-dark-card rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-bold text-green-600 dark:text-green-500">SELL TODAY</h3>
-            <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
-              Current Rate
-            </span>
+      {!loading && predictions.length > 0 && (
+        <>
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">4-Day Price Forecast</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 mb-6">
+            {predictions.map((pred: Prediction, index: number) => (
+              <div key={index} className={`bg-white dark:bg-dark-card rounded-xl p-6 border-l-4 shadow-sm ${index === 0 ? 'border-green-500' : 'border-blue-500'}`}>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className={`text-lg font-bold ${index === 0 ? 'text-green-600 dark:text-green-500' : 'text-blue-600 dark:text-blue-500'}`}>
+                    {index === 0 ? 'DAY 1' : `DAY ${index + 1}`}
+                  </h3>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${index === 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'}`}>
+                    {pred.date}
+                  </span>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Predicted Price (₹/Quintal)</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">₹{pred.predicted_price}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Total Revenue</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">₹2,545</p>
-        </div>
-
-        {/* Sell in 4 Days Card */}
-        <div className="bg-white dark:bg-dark-card rounded-xl p-6 border-l-4 border-orange-500 shadow-sm">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-bold text-orange-600 dark:text-orange-500">SELL IN 4 DAYS</h3>
-            <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-semibold rounded-full">
-              Predicted Rate
-            </span>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Total Revenue</p>
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className="text-red-500" size={20} />
-            <span className="text-red-600 dark:text-red-400 font-semibold">-4.24% return</span>
-          </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">₹2,437</p>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* Market Factors Section */}
       <div className="bg-gray-900 dark:bg-gray-950 rounded-xl p-6 border border-gray-800">
@@ -57,7 +106,7 @@ const PricePrediction = () => {
           <h3 className="text-lg font-bold text-gray-300">Top Market Factors</h3>
           <div className="text-right">
             <p className="text-gray-400 text-sm">AI Confidence</p>
-            <p className="text-4xl font-bold text-white">67%</p>
+            <p className="text-4xl font-bold text-white">82%</p>
           </div>
         </div>
 

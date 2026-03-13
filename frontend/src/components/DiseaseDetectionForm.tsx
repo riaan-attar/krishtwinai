@@ -3,19 +3,19 @@ import { Upload, Loader } from 'lucide-react'
 import { useThemeClasses } from '../hooks/useThemeClasses'
 
 interface DiseaseDetectionFormProps {
-  onSubmit: (cropName: string, symptoms: string) => Promise<void>
+  onSubmit: (image: File) => Promise<void>
   loading: boolean
 }
 
 const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) => {
   const themeClasses = useThemeClasses()
-  const [cropName, setCropName] = useState('')
-  const [symptoms, setSymptoms] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setImageFile(file)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
@@ -26,56 +26,23 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!cropName.trim() || !symptoms.trim()) {
-      alert('Please fill in all fields')
+    if (!imageFile) {
+      alert('Please upload a plant image for disease detection')
       return
     }
-    await onSubmit(cropName, symptoms)
+    await onSubmit(imageFile)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className={`${themeClasses.card} rounded-xl p-8 ${themeClasses.border} border`}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Form Fields */}
-          <div className="space-y-6">
-            {/* Crop Name */}
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${themeClasses.text.primary}`}>
-                Crop Name
-              </label>
-              <input
-                type="text"
-                value={cropName}
-                onChange={(e) => setCropName(e.target.value)}
-                placeholder="e.g., Tomato, Wheat, Rice"
-                className={`w-full px-4 py-3 rounded-lg ${themeClasses.input} border ${themeClasses.border} focus:outline-none focus:border-green-500 transition-colors`}
-                disabled={loading}
-              />
-            </div>
-
-            {/* Symptoms */}
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${themeClasses.text.primary}`}>
-                Describe Symptoms
-              </label>
-              <textarea
-                value={symptoms}
-                onChange={(e) => setSymptoms(e.target.value)}
-                placeholder="Describe the symptoms you observe on the plant (e.g., yellow spots, wilting, brown patches)"
-                rows={4}
-                className={`w-full px-4 py-3 rounded-lg ${themeClasses.input} border ${themeClasses.border} focus:outline-none focus:border-green-500 transition-colors resize-none`}
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          {/* Right Column - Image Upload */}
+        <div className="max-w-2xl mx-auto">
+          {/* Image Upload */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${themeClasses.text.primary}`}>
-              Upload Plant Image (Optional)
+            <label className={`block text-sm font-medium mb-4 text-center ${themeClasses.text.primary}`}>
+              Upload Plant Image
             </label>
-            <div className={`border-2 border-dashed ${themeClasses.border} rounded-lg p-6 text-center cursor-pointer hover:border-green-500 transition-colors`}>
+            <div className={`border-2 border-dashed ${themeClasses.border} rounded-lg p-8 text-center cursor-pointer hover:border-green-500 transition-colors`}>
               <input
                 type="file"
                 accept="image/*"
@@ -86,19 +53,21 @@ const DiseaseDetectionForm = ({ onSubmit, loading }: DiseaseDetectionFormProps) 
               />
               <label htmlFor="image-upload" className="cursor-pointer block">
                 {imagePreview ? (
-                  <div className="space-y-2">
-                    <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
-                    <p className={`text-sm ${themeClasses.text.secondary}`}>Click to change image</p>
+                  <div className="space-y-4">
+                    <img src={imagePreview} alt="Preview" className="w-full max-h-96 object-contain rounded-lg" />
+                    <p className={`text-sm ${themeClasses.text.secondary}`}>Click here to change image</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <Upload className={`mx-auto ${themeClasses.text.secondary}`} size={32} />
-                    <p className={`text-sm font-medium ${themeClasses.text.primary}`}>
-                      Click to upload or drag and drop
-                    </p>
-                    <p className={`text-xs ${themeClasses.text.secondary}`}>
-                      PNG, JPG, GIF up to 10MB
-                    </p>
+                  <div className="space-y-4 py-8">
+                    <Upload className={`mx-auto ${themeClasses.text.secondary}`} size={48} />
+                    <div className="space-y-2">
+                      <p className={`text-lg font-medium ${themeClasses.text.primary}`}>
+                        Click to upload or drag and drop
+                      </p>
+                      <p className={`text-sm ${themeClasses.text.secondary}`}>
+                        PNG, JPG, GIF up to 10MB
+                      </p>
+                    </div>
                   </div>
                 )}
               </label>
