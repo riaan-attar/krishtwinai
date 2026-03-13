@@ -1,5 +1,7 @@
 import { Plus, MapPin, Star, TrendingUp, Navigation, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
+import { useRealtimeData } from '../hooks/useRealtimeData'
+import { Buyer as BuyerType } from '../types/database'
 
 interface Buyer {
   id: string
@@ -20,34 +22,21 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState('shortest')
   const [activeTab, setActiveTab] = useState('buyer-map')
 
-  const buyers: Buyer[] = [
-    {
-      id: '1',
-      name: 'K.P. Traders',
-      verified: true,
-      recommended: true,
-      type: 'WHOLESALE MARKET',
-      rating: 4.3,
-      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=100&h=100&fit=crop',
-      offeredPrice: 2780,
-      transportCost: 1380,
-      distance: 172,
-      netProfit: 1400
-    },
-    {
-      id: '2',
-      name: 'Ekdunt Vegetables',
-      verified: false,
-      recommended: false,
-      type: 'WHOLESALE MARKET',
-      rating: 4.6,
-      image: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=100&h=100&fit=crop',
-      offeredPrice: 2800,
-      transportCost: 1467,
-      distance: 183,
-      netProfit: 1333
-    }
-  ]
+  const { data: buyersData, loading } = useRealtimeData<BuyerType>('buyers')
+
+  const buyers: Buyer[] = buyersData.map(buyer => ({
+    id: buyer.id,
+    name: buyer.name,
+    verified: buyer.verified,
+    recommended: buyer.recommended,
+    type: buyer.type,
+    rating: buyer.rating,
+    image: buyer.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=100&h=100&fit=crop',
+    offeredPrice: buyer.offered_price,
+    transportCost: buyer.transport_cost,
+    distance: buyer.distance,
+    netProfit: buyer.net_profit
+  }))
 
   return (
     <div>
@@ -140,7 +129,12 @@ const Marketplace = () => {
             </div>
 
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
-              {buyers.map((buyer) => (
+              {loading ? (
+                <div className="text-center py-8 text-gray-400">Loading buyers...</div>
+              ) : buyers.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">No buyers found</div>
+              ) : (
+                buyers.map((buyer) => (
                 <div
                   key={buyer.id}
                   className="bg-dark-bg rounded-xl p-4 border border-dark-border hover:border-green-500/50 transition-all cursor-pointer"
@@ -208,7 +202,8 @@ const Marketplace = () => {
                     Get Directions
                   </button>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </div>
         </div>

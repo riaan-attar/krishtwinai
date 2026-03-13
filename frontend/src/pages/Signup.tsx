@@ -1,152 +1,143 @@
-import React, { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { User, Mail, MapPin, Lock, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 
-const Signup: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as { selectedRole?: 'Farmer' | 'Customer' | 'Retailer' };
+export default function SignUp() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [name, setName] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { signUp } = useAuth()
+  const { t } = useLanguage()
+  const navigate = useNavigate()
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState<'Farmer' | 'Customer' | 'Retailer'>(state?.selectedRole || 'Farmer');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implementation logic here
-    navigate('/login');
-  };
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    setLoading(true)
+
+    const { error } = await signUp(email, password, { name })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+    } else {
+      navigate('/dashboard')
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-4 py-12">
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg p-10 border border-[#e2e8f0]">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-[#1e293b] mb-3">Create an account</h1>
-          <p className="text-[#64748b] font-medium">
-            Enter your information to join the KrishiSetu AI community.
+    <div className="min-h-screen flex items-center justify-center bg-dark-bg px-4">
+      <div className="max-w-md w-full space-y-8 bg-dark-card p-8 rounded-lg shadow-lg">
+        <div>
+          <h2 className="text-3xl font-bold text-center text-white">
+            {t('auth.createAccount')}
+          </h2>
+          <p className="mt-2 text-center text-gray-400">
+            {t('auth.signUpToStart')}
           </p>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-[#1e293b] ml-1">Display Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
-                <input
-                  type="text"
-                  placeholder="Display Name"
-                  className="w-full pl-12 pr-4 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
-                  required
-                />
-              </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
+              {error}
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-[#1e293b] ml-1">Username</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
-                <input
-                  type="text"
-                  placeholder="Username"
-                  className="w-full pl-12 pr-4 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-[#1e293b] ml-1">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
+          )}
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+                {t('auth.fullName')}
+              </label>
               <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full pl-12 pr-4 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-[#1e293b] ml-1">Region</label>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
-              <input
+                id="name"
+                name="name"
                 type="text"
-                placeholder="Enter Region"
-                className="w-full pl-12 pr-4 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder={t('auth.enterName')}
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-[#1e293b] ml-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                {t('auth.email')}
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="w-full pl-12 pr-12 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
+                id="email"
+                name="email"
+                type="email"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder={t('auth.enterEmail')}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#64748b]"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-[#1e293b] ml-1">Confirm Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8]" />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                {t('auth.password')}
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                className="w-full pl-12 pr-12 py-4 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all text-slate-900 font-medium"
+                id="password"
+                name="password"
+                type="password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder={t('auth.enterPassword')}
+              />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+                {t('auth.confirmPassword')}
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder={t('auth.confirmYourPassword')}
               />
             </div>
           </div>
-
-        {/* Role Selection Tabs */}
-        <div className="flex bg-[#f1f5f9] p-1.5 rounded-2xl mb-8">
-          {(['Farmer', 'Customer', 'Retailer'] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setRole(tab)}
-              className={`flex-1 py-3 px-2 rounded-xl text-sm font-bold transition-all ${
-                role === tab
-                  ? 'bg-white text-[#1e293b] shadow-sm'
-                  : 'text-[#64748b] hover:text-[#1e293b]'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
 
           <button
             type="submit"
-            className="w-full bg-[#2d6a4f] hover:bg-[#1b4332] text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] text-lg"
+            disabled={loading}
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create an account
+            {loading ? t('auth.creatingAccount') : t('auth.signup')}
           </button>
-        </form>
 
-        <div className="mt-8 text-center">
-          <p className="text-[#64748b] font-medium">
-            Already have an account? <Link to="/login" className="text-[#1e293b] font-bold hover:underline">Login</Link>
-          </p>
-        </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-400">
+              {t('auth.alreadyHaveAccount')}{' '}
+              <Link to="/login" className="text-primary hover:text-primary/90">
+                {t('auth.login')}
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
-  );
-};
-
-export default Signup;
+  )
+}

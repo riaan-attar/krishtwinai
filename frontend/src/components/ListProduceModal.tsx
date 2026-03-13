@@ -1,5 +1,7 @@
-import { Leaf, ChevronDown, X } from 'lucide-react'
+import { X, Leaf, Shield, ChevronDown } from 'lucide-react'
 import { FormEvent, useState } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 interface ListProduceModalProps {
   isOpen: boolean
@@ -14,100 +16,141 @@ const ListProduceModal = ({ isOpen, onClose }: ListProduceModalProps) => {
   const [location, setLocation] = useState('')
   const [contact, setContact] = useState('')
   const [description, setDescription] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { user } = useAuth()
 
   if (!isOpen) return null
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    onClose()
+    setLoading(true)
+    setError('')
+
+    try {
+      const { error: insertError } = await supabase
+        .from('produce_listings')
+        .insert({
+          user_id: user?.id,
+          crop_name: product,
+          quantity: parseFloat(quantity) || 0,
+          unit: 'kg',
+          price_per_unit: parseFloat(price),
+          description: description || null,
+          location: location || null,
+          status: 'available'
+        })
+
+      if (insertError) throw insertError
+
+      // Reset form
+      setProduct('')
+      setPrice('')
+      setQuantity('')
+      setName('')
+      setLocation('')
+      setContact('')
+      setDescription('')
+      
+      onClose()
+    } catch (err: any) {
+      setError(err.message || 'Failed to create listing')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#f8f9fa] rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-dark-bg rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-dark-border">
         {/* Header */}
-        <div className="p-10 pb-6 relative">
+        <div className="flex items-center justify-between p-6 border-b border-dark-border">
+          <div className="flex items-center gap-3">
+            <Leaf className="text-green-500" size={28} />
+            <div>
+              <h2 className="text-2xl font-bold">List Your Produce</h2>
+              <p className="text-gray-400 text-sm mt-1">
+                Select which product you're selling. Your offer will appear as a seller card on that product's marketplace page — buyers can compare your price directly.
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="absolute right-8 top-8 text-gray-400 hover:text-[#111827] transition-colors"
+            className="text-gray-400 hover:text-white transition-colors"
           >
             <X size={24} />
           </button>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-[#e6f4ea] rounded-xl flex items-center justify-center">
-              <Leaf className="text-[#2d6a4f]" size={24} />
-            </div>
-            <h2 className="text-3xl font-extrabold text-[#111827]">List Your Produce</h2>
-          </div>
-          <p className="text-gray-500 font-medium">
-            Fill in your crop details. Your listing will appear live in the marketplace immediately after submission.
-          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-10 pt-0 space-y-8">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+          
+          {/* Product Selector */}
           <div>
-            <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
-              PRODUCE NAME <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              placeholder="e.g. Fresh Tomatoes, Alphonso Mango..."
-              className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
-              CATEGORY
+            <label className="block text-sm font-medium mb-2 text-gray-300">
+              SELECT PRODUCT <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <select
-                className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] appearance-none cursor-pointer font-medium"
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+                className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border-2 border-green-500 outline-none focus:ring-2 focus:ring-green-500 appearance-none cursor-pointer"
+                required
               >
-                <option value="Vegetables">Vegetables</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Grains">Grains</option>
-                <option value="Staples">Staples</option>
+                <option value="">Choose which product you're selling...</option>
+                <option value="wheat">Wheat</option>
+                <option value="rice">Rice</option>
+                <option value="onion">Onion</option>
+                <option value="tomato">Tomato</option>
+                <option value="potato">Potato</option>
+                <option value="spinach">Spinach (Palak)</option>
+                <option value="green-peas">Green Peas</option>
+                <option value="grapes">Grapes</option>
+                <option value="cotton">Cotton</option>
+                <option value="sugarcane">Sugarcane</option>
               </select>
-              <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+              <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          {/* Price and Quantity */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
-                PRICE / KG (₹) <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium mb-2 text-gray-300">
+                YOUR PRICE / KG (₹) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="e.g. 35"
-                className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
+                className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 AVAILABLE QTY (KG)
               </label>
               <input
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                placeholder="e.g. 500"
-                className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
+                placeholder="e.g. 200"
+                className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          {/* Name and Location */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 YOUR NAME
               </label>
               <input
@@ -115,25 +158,26 @@ const ListProduceModal = ({ isOpen, onClose }: ListProduceModalProps) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Ramesh Patil"
-                className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
+                className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 LOCATION / VILLAGE
               </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Nashik, Maharashtra"
-                className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
+                placeholder="e.g. Nashik, MH"
+                className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
 
+          {/* Contact Number */}
           <div>
-            <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
+            <label className="block text-sm font-medium mb-2 text-gray-300">
               CONTACT NUMBER
             </label>
             <input
@@ -141,48 +185,48 @@ const ListProduceModal = ({ isOpen, onClose }: ListProduceModalProps) => {
               value={contact}
               onChange={(e) => setContact(e.target.value)}
               placeholder="e.g. 9876543210"
-              className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
+              className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
+          {/* Description */}
           <div>
-            <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
-              IMAGE URL <span className="text-gray-400 font-normal normal-case">(optional — leave blank for auto)</span>
-            </label>
-            <input
-              type="text"
-              placeholder="https://example.com/my-tomatoes.jpg"
-              className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] transition-all font-medium placeholder:text-gray-300"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-black mb-3 text-[#64748b] uppercase tracking-widest">
+            <label className="block text-sm font-medium mb-2 text-gray-300">
               DESCRIPTION (OPTIONAL)
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your produce — variety, quality, harvest date..."
-              rows={3}
-              className="w-full px-6 py-4 bg-white text-[#111827] rounded-2xl border border-[#e2e8f0] outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 focus:border-[#2d6a4f] resize-none transition-all font-medium placeholder:text-gray-300"
+              placeholder="Variety, quality, harvest date, freshness guarantee..."
+              rows={4}
+              className="w-full px-4 py-3 bg-dark-card text-white rounded-lg border border-dark-border outline-none focus:ring-2 focus:ring-green-500 resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-4 pt-4">
+          {/* Info Box */}
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex gap-3">
+            <Shield className="text-blue-400 flex-shrink-0 mt-0.5" size={20} />
+            <p className="text-blue-300 text-sm">
+              Your contact details (name, location, phone) will be visible to buyers comparing deals on the product page.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-8 py-4 bg-white hover:bg-gray-50 text-[#1e293b] font-bold rounded-2xl border border-[#e2e8f0] transition-all active:scale-95 shadow-sm"
+              className="px-8 py-3 bg-dark-card hover:bg-dark-hover text-white font-semibold rounded-lg transition-colors border border-dark-border"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-8 py-4 bg-[#00966d] hover:bg-[#1b4332] text-white font-bold rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-900/10"
+              disabled={loading}
+              className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Leaf size={20} />
-              Publish Listing
+              {loading ? 'Publishing...' : 'Publish Listing'}
             </button>
           </div>
         </form>

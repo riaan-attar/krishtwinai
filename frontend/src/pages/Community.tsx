@@ -1,5 +1,7 @@
 import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useRealtimeData } from '../hooks/useRealtimeData'
+import { Community as CommunityType } from '../types/database'
 
 interface CommunityCard {
   id: string
@@ -12,44 +14,17 @@ interface CommunityCard {
 }
 
 const Community = () => {
-  const communities: CommunityCard[] = [
-    {
-      id: '1',
-      slug: 'jalgaon-farmers',
-      name: 'c/Jalgaon Farmers',
-      description: 'A community for farmers in Jalgaon to discuss Banana, Cotton, and local farming practices.',
-      image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&h=400&fit=crop',
-      posts: 142,
-      lastActive: 'just now'
-    },
-    {
-      id: '2',
-      slug: 'nashik-grape-growers',
-      name: 'c/Nashik Grape Growers',
-      description: 'Connect with vineyards, export specialists, and vegetable growers in Nashik region.',
-      image: 'https://images.unsplash.com/photo-1596363505729-4190a9506133?w=800&h=400&fit=crop',
-      posts: 89,
-      lastActive: 'just now'
-    },
-    {
-      id: '3',
-      slug: 'pune-agri-hub',
-      name: 'c/Pune Agri-Hub',
-      description: 'Discuss modern farming techniques, greenhouse setups, and direct-to-consumer sales.',
-      image: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&h=400&fit=crop',
-      posts: 256,
-      lastActive: 'just now'
-    },
-    {
-      id: '4',
-      slug: 'nagpur-orange-city',
-      name: 'c/Nagpur Orange City',
-      description: 'Dedicated to citrus farmers, cotton growers, and central Maharashtra agriculture.',
-      image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=800&h=400&fit=crop',
-      posts: 115,
-      lastActive: 'just now'
-    }
-  ]
+  const { data: communitiesData, loading } = useRealtimeData<CommunityType>('communities')
+
+  const communities: CommunityCard[] = communitiesData.map(community => ({
+    id: community.id,
+    slug: community.slug,
+    name: community.name,
+    description: community.description || '',
+    image: community.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&h=400&fit=crop',
+    posts: community.posts_count,
+    lastActive: 'just now'
+  }))
 
   return (
     <div>
@@ -62,7 +37,12 @@ const Community = () => {
 
       {/* Community Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {communities.map((community) => (
+        {loading ? (
+          <div className="col-span-full text-center py-12 text-gray-400">Loading communities...</div>
+        ) : communities.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-gray-400">No communities found</div>
+        ) : (
+          communities.map((community) => (
           <Link
             key={community.id}
             to={`/community/${community.slug}`}
@@ -93,7 +73,8 @@ const Community = () => {
               </div>
             </div>
           </Link>
-        ))}
+        ))
+        )}
       </div>
 
       {/* Floating Action Button */}

@@ -8,11 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          light: '#52b788',
-          DEFAULT: '#2d6a4f',
-          dark: '#1b4332',
-        },
+        primary: '#10b981', // green-500
         dark: {
           bg: '#0a0e1a',
           card: '#0f1419',
