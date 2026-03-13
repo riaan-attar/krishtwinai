@@ -10,6 +10,8 @@ import Dashboard from './pages/Dashboard'
 import PricePrediction from './pages/PricePrediction'
 import CropRecommendation from './pages/CropRecommendation'
 import WeatherAdvice from './pages/WeatherAdvice'
+import DiseaseDetection from './pages/DiseaseDetection'
+import GovernmentSchemes from './pages/GovernmentSchemes'
 import Community from './pages/Community'
 import CommunityDetail from './pages/CommunityDetail'
 import Orders from './pages/Orders'
@@ -19,6 +21,7 @@ import Marketplace from './pages/Marketplace'
 import ProduceListings from './pages/ProduceListings'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
+import Landing from './pages/Landing'
 import { useThemeClasses } from './hooks/useThemeClasses'
 
 function AppContent() {
@@ -28,6 +31,7 @@ function AppContent() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route
@@ -40,11 +44,12 @@ function AppContent() {
                   <TopBar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
                   <main className="p-8">
                     <Routes>
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/price-prediction" element={<PricePrediction />} />
                       <Route path="/crop-recommendation" element={<CropRecommendation />} />
                       <Route path="/weather-advice" element={<WeatherAdvice />} />
+                      <Route path="/disease-detection" element={<DiseaseDetection />} />
+                      <Route path="/government-schemes" element={<GovernmentSchemes />} />
                       <Route path="/marketplace" element={<Marketplace />} />
                       <Route path="/produce-listings" element={<ProduceListings />} />
                       <Route path="/community" element={<Community />} />
