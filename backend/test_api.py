@@ -2,7 +2,7 @@ import requests
 
 # Test price
 try:
-    res = requests.post("http://127.0.0.1:5001/predict/price", json={
+    res = requests.post("https://krishtwinai.onrender.com/predict/price", json={
         "market": "Nasik",
         "commodity": "Onion",
         "today_date": "2025-03-12"
@@ -13,8 +13,8 @@ except Exception as e:
 
 # Test disease
 try:
-    with open(r"c:\Users\Riaan\Desktop\KrishiSetu-AI\backend\image.png", "rb") as f:
-        res = requests.post("http://127.0.0.1:5001/predict/disease", files={"image": f})
+    with open(r"c:\Users\Riaan\Desktop\krishtwinai\backend\image.png", "rb") as f:
+        res = requests.post("https://krishtwinai.onrender.com/predict/disease", files={"image": f})
         print("Disease Response:", res.status_code, res.json())
 except Exception as e:
     print("Disease Error:", e)
