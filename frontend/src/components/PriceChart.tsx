@@ -133,6 +133,7 @@ const PriceChart = ({ predictions = [] }: PriceChartProps) => {
       y: {
         beginAtZero: false,
         ticks: {
+          stepSize: 200,
           color: '#9ca3af',
           callback: function(value: any) {
             return '₹' + value
