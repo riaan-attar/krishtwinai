@@ -20,8 +20,9 @@ import Profile from './pages/Profile'
 import Marketplace from './pages/Marketplace'
 import ProduceListings from './pages/ProduceListings'
 import Login from './pages/Login'
-import SignUp from './pages/Signup'
+import SignUp from './pages/SignUp'
 import Landing from './pages/Landing'
+import TalkToPDF from './pages/TalkToPDF'
 import { useThemeClasses } from './hooks/useThemeClasses'
 
 function AppContent() {
@@ -76,6 +77,7 @@ function AppContent() {
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/talk-to-pdf" element={<TalkToPDF />} />
                     </Routes>
                   </main>
                 </div>

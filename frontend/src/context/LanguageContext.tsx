@@ -584,6 +584,24 @@ const translations = {
     'crop.gram': 'Gram',
     'crop.groundnut': 'Groundnut',
     'crop.sunflower': 'Sunflower',
+
+    // Talk to PDF
+    'nav.talkToPdf': 'Talk to PDF',
+    'pdf.title': 'Talk to PDF',
+    'pdf.subtitle': 'Upload any farming PDF and chat with AI about its contents.',
+    'pdf.uploadPrompt': 'Upload a PDF to get started',
+    'pdf.uploadHint': 'Drag & drop or click to choose a PDF file',
+    'pdf.chooseFile': 'Choose PDF File',
+    'pdf.extracting': 'Extracting text from PDF...',
+    'pdf.ready': 'PDF "{name}" loaded ({pages} pages). Ask me anything about it!',
+    'pdf.pages': 'pages',
+    'pdf.changePdf': 'Change PDF',
+    'pdf.inputPlaceholder': 'Ask a question about the PDF... (Enter to send)',
+    'pdf.send': 'Send',
+    'pdf.clearChat': 'Clear chat',
+    'pdf.onlyPdf': 'Please upload a PDF file.',
+    'pdf.extractError': 'Failed to extract text from the PDF. Please try another file.',
+    'pdf.error': 'Failed to get a response. Please try again.',
   },
   hi: {
     // Navigation & Sidebar
@@ -1156,6 +1174,24 @@ const translations = {
     'crop.gram': 'चना',
     'crop.groundnut': 'मूंगफली',
     'crop.sunflower': 'सूरजमुखी',
+
+    // Talk to PDF
+    'nav.talkToPdf': 'PDF से बात करें',
+    'pdf.title': 'PDF से बात करें',
+    'pdf.subtitle': 'कोई भी कृषि PDF अपलोड करें और AI से उसके बारे में बात करें।',
+    'pdf.uploadPrompt': 'शुरू करने के लिए PDF अपलोड करें',
+    'pdf.uploadHint': 'खींचें और छोड़ें या PDF फ़ाइल चुनने के लिए क्लिक करें',
+    'pdf.chooseFile': 'PDF फ़ाइल चुनें',
+    'pdf.extracting': 'PDF से टेक्स्ट निकाला जा रहा है...',
+    'pdf.ready': 'PDF "{name}" लोड हो गया ({pages} पृष्ठ)। इसके बारे में कुछ भी पूछें!',
+    'pdf.pages': 'पृष्ठ',
+    'pdf.changePdf': 'PDF बदलें',
+    'pdf.inputPlaceholder': 'PDF के बारे में कोई सवाल पूछें... (भेजने के लिए Enter दबाएं)',
+    'pdf.send': 'भेजें',
+    'pdf.clearChat': 'चैट साफ़ करें',
+    'pdf.onlyPdf': 'कृपया एक PDF फ़ाइल अपलोड करें।',
+    'pdf.extractError': 'PDF से टेक्स्ट निकालने में विफल। कृपया कोई अन्य फ़ाइल आज़माएं।',
+    'pdf.error': 'प्रतिक्रिया प्राप्त करने में विफल। कृपया पुनः प्रयास करें।',
   },
   mr: {
     // Navigation & Sidebar
@@ -1728,6 +1764,24 @@ const translations = {
     'crop.gram': 'हरभरा',
     'crop.groundnut': 'भुईमूग',
     'crop.sunflower': 'सूर्यफूल',
+
+    // Talk to PDF
+    'nav.talkToPdf': 'PDF शी बोला',
+    'pdf.title': 'PDF शी बोला',
+    'pdf.subtitle': 'कोणतीही शेती PDF अपलोड करा आणि AI शी त्याबद्दल बोला।',
+    'pdf.uploadPrompt': 'सुरू करण्यासाठी PDF अपलोड करा',
+    'pdf.uploadHint': 'ड्रॅग व ड्रॉप करा किंवा PDF फाइल निवडण्यासाठी क्लिक करा',
+    'pdf.chooseFile': 'PDF फाइल निवडा',
+    'pdf.extracting': 'PDF मधून मजकूर काढला जात आहे...',
+    'pdf.ready': 'PDF "{name}" लोड झाले ({pages} पृष्ठे). याबद्दल काहीही विचारा!',
+    'pdf.pages': 'पृष्ठे',
+    'pdf.changePdf': 'PDF बदला',
+    'pdf.inputPlaceholder': 'PDF बद्दल प्रश्न विचारा... (पाठवण्यासाठी Enter दाबा)',
+    'pdf.send': 'पाठवा',
+    'pdf.clearChat': 'चॅट साफ करा',
+    'pdf.onlyPdf': 'कृपया PDF फाइल अपलोड करा।',
+    'pdf.extractError': 'PDF मधून मजकूर काढण्यात अयशस्वी. कृपया दुसरी फाइल वापरा।',
+    'pdf.error': 'प्रतिसाद मिळवण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा।',
   }
 }
 
