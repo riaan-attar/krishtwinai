@@ -112,21 +112,20 @@ export const getCurrentLocation = (): Promise<LocationData> => {
 }
 
 // Reverse geocoding to get location details
-const reverseGeocode = async (lat: number, lon: number) => {
+export const reverseGeocode = async (lat: number, lon: number) => {
   try {
-    // Using OpenCage Geocoding API (free tier available)
+    // Using BigDataCloud Free Reverse Geocoding API (no key required for client-side resolution)
     const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=demo&limit=1`
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
     )
     const data = await response.json()
     
-    if (data.results && data.results[0]) {
-      const result = data.results[0].components
+    if (data) {
       return {
-        city: result.city || result.town || result.village,
-        state: result.state,
-        country: result.country,
-        district: result.county || result.district
+        city: data.city || data.locality,
+        state: data.principalSubdivision,
+        country: data.countryName,
+        district: data.locality
       }
     }
   } catch (error) {
