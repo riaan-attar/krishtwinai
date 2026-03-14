@@ -24,33 +24,33 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
   const [locationLoading, setLocationLoading] = useState(false)
 
   const soilTypes = [
-    'Black Soil (Regur)',
-    'Red Soil',
-    'Alluvial Soil',
-    'Laterite Soil',
-    'Sandy Soil',
-    'Clay Soil',
-    'Loamy Soil'
+    { value: 'Black Soil (Regur)', label: t('soil.black') },
+    { value: 'Red Soil', label: t('soil.red') },
+    { value: 'Alluvial Soil', label: t('soil.alluvial') },
+    { value: 'Laterite Soil', label: t('soil.laterite') },
+    { value: 'Sandy Soil', label: t('soil.sandy') },
+    { value: 'Clay Soil', label: t('soil.clay') },
+    { value: 'Loamy Soil', label: t('soil.loamy') }
   ]
 
   const seasons = [
-    'Kharif (Monsoon)',
-    'Rabi (Winter)',
-    'Zaid (Summer)',
-    'Year Round'
+    { value: 'Kharif (Monsoon)', label: t('season.kharif') },
+    { value: 'Rabi (Winter)', label: t('season.rabi') },
+    { value: 'Zaid (Summer)', label: t('season.zaid') },
+    { value: 'Year Round', label: t('season.yearRound') }
   ]
 
   const waterAvailabilityOptions = [
-    'Abundant (Irrigated)',
-    'Moderate (Partial Irrigation)',
-    'Limited (Rain-fed)',
-    'Scarce (Drought-prone)'
+    { value: 'Abundant (Irrigated)', label: t('water.abundant') },
+    { value: 'Moderate (Partial Irrigation)', label: t('water.moderate') },
+    { value: 'Limited (Rain-fed)', label: t('water.limited') },
+    { value: 'Scarce (Drought-prone)', label: t('water.scarce') }
   ]
 
   const experienceLevels = [
-    'Beginner (0-2 years)',
-    'Intermediate (3-10 years)',
-    'Experienced (10+ years)'
+    { value: 'Beginner (0-2 years)', label: t('experience.beginner') },
+    { value: 'Intermediate (3-10 years)', label: t('experience.intermediate') },
+    { value: 'Experienced (10+ years)', label: t('experience.experienced') }
   ]
 
   const getCurrentLocation = () => {
@@ -121,7 +121,18 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
     }))
   }
 
-  const commonCrops = ['Rice', 'Wheat', 'Cotton', 'Soybean', 'Sugarcane', 'Maize', 'Tur', 'Gram', 'Groundnut', 'Sunflower']
+  const commonCrops = [
+    { value: 'Rice', label: t('crop.rice') },
+    { value: 'Wheat', label: t('crop.wheat') },
+    { value: 'Cotton', label: t('crop.cotton') },
+    { value: 'Soybean', label: t('crop.soybean') },
+    { value: 'Sugarcane', label: t('crop.sugarcane') },
+    { value: 'Maize', label: t('crop.maize') },
+    { value: 'Tur', label: t('crop.tur') },
+    { value: 'Gram', label: t('crop.gram') },
+    { value: 'Groundnut', label: t('crop.groundnut') },
+    { value: 'Sunflower', label: t('crop.sunflower') }
+  ]
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -167,16 +178,16 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
                 ) : (
                   <MapPin size={16} />
                 )}
-                {locationLoading ? 'Getting Location...' : 'Get Current Location'}
+                {locationLoading ? t('cropRecommendation.gettingLocation') : t('cropRecommendation.getCurrentLocation')}
               </button>
               
               {location.latitude && location.longitude && (
                 <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                   <p className="text-green-400 text-sm">
-                    <strong>Location:</strong> {location.city}, {location.district}, {location.state}
+                    <strong>{t('common.location')}:</strong> {location.city}, {location.district}, {location.state}
                   </p>
                   <p className="text-gray-400 text-xs">
-                    Coordinates: {location.latitude?.toFixed(4)}, {location.longitude?.toFixed(4)}
+                    {t('common.coordinates')}: {location.latitude?.toFixed(4)}, {location.longitude?.toFixed(4)}
                   </p>
                 </div>
               )}
@@ -185,14 +196,14 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="State"
+                placeholder={t('placeholder.state') || 'State'}
                 value={location.state || ''}
                 onChange={(e) => setLocation(prev => ({ ...prev, state: e.target.value }))}
                 className="px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
               />
               <input
                 type="text"
-                placeholder="District"
+                placeholder={t('placeholder.district') || 'District'}
                 value={location.district || ''}
                 onChange={(e) => setLocation(prev => ({ ...prev, district: e.target.value }))}
                 className="px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
@@ -204,19 +215,19 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
 
       {/* Farm Details Section */}
       <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-        <h3 className="text-xl font-bold mb-4">Farm Details</h3>
+        <h3 className="text-xl font-bold mb-4">{t('cropRecommendation.farmDetails')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Soil Type</label>
+            <label className="block text-sm font-medium mb-2">{t('cropRecommendation.soilType')}</label>
             <select
               value={farmData.soilType}
               onChange={(e) => setFarmData(prev => ({ ...prev, soilType: e.target.value }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
             >
-              <option value="">Select Soil Type</option>
+              <option value="">{t('cropRecommendation.selectSoilType')}</option>
               {soilTypes.map(soil => (
-                <option key={soil} value={soil}>{soil}</option>
+                <option key={soil.value} value={soil.value}>{soil.label}</option>
               ))}
             </select>
           </div>
@@ -224,90 +235,89 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
           <div>
             <label className="block text-sm font-medium mb-2 flex items-center gap-2">
               <Calendar size={16} />
-              Season
+              {t('cropRecommendation.season')}
             </label>
             <select
               value={farmData.season}
               onChange={(e) => setFarmData(prev => ({ ...prev, season: e.target.value }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
             >
-              <option value="">Select Season</option>
+              <option value="">{t('cropRecommendation.selectSeason')}</option>
               {seasons.map(season => (
-                <option key={season} value={season}>{season}</option>
+                <option key={season.value} value={season.value}>{season.label}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Farm Size (acres)</label>
+            <label className="block text-sm font-medium mb-2">{t('cropRecommendation.farmSize')}</label>
             <input
               type="number"
               value={farmData.farmSize || ''}
               onChange={(e) => setFarmData(prev => ({ ...prev, farmSize: Number(e.target.value) }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
-              placeholder="Enter farm size"
+              placeholder={t('cropRecommendation.enterFarmSize')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2 flex items-center gap-2">
               <DollarSign size={16} />
-              Budget (₹)
+              {t('cropRecommendation.budget')}
             </label>
             <input
               type="number"
               value={farmData.budget || ''}
               onChange={(e) => setFarmData(prev => ({ ...prev, budget: Number(e.target.value) }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
-              placeholder="Enter budget"
+              placeholder={t('cropRecommendation.enterBudget')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2 flex items-center gap-2">
               <Droplets size={16} />
-              Water Availability
+              {t('cropRecommendation.waterAvailability')}
             </label>
             <select
               value={farmData.waterAvailability}
               onChange={(e) => setFarmData(prev => ({ ...prev, waterAvailability: e.target.value }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
             >
-              <option value="">Select Water Availability</option>
+              <option value="">{t('cropRecommendation.selectWaterAvailability')}</option>
               {waterAvailabilityOptions.map(option => (
-                <option key={option} value={option}>{option}</option>
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Farming Experience</label>
+            <label className="block text-sm font-medium mb-2">{t('cropRecommendation.farmingExperience')}</label>
             <select
               value={farmData.farmingExperience}
               onChange={(e) => setFarmData(prev => ({ ...prev, farmingExperience: e.target.value }))}
               className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-white"
             >
-              <option value="">Select Experience Level</option>
+              <option value="">{t('cropRecommendation.selectExperience')}</option>
               {experienceLevels.map(level => (
-                <option key={level} value={level}>{level}</option>
+                <option key={level.value} value={level.value}>{level.label}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Previous Crops */}
         <div className="mt-4">
-          <label className="block text-sm font-medium mb-2">Previous Crops (Select all that apply)</label>
+          <label className="block text-sm font-medium mb-2">{t('cropRecommendation.previousCrops')}</label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             {commonCrops.map(crop => (
-              <label key={crop} className="flex items-center gap-2 text-sm">
+              <label key={crop.value} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={farmData.previousCrops?.includes(crop) || false}
-                  onChange={() => handlePreviousCropsChange(crop)}
+                  checked={farmData.previousCrops?.includes(crop.value) || false}
+                  onChange={() => handlePreviousCropsChange(crop.value)}
                   className="text-green-500"
                 />
-                {crop}
+                {crop.label}
               </label>
             ))}
           </div>
@@ -323,10 +333,10 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
         {loading ? (
           <>
             <Loader2 className="animate-spin" size={20} />
-            Getting Recommendations...
+            {t('cropRecommendation.gettingRecommendations')}
           </>
         ) : (
-          'Get Crop Recommendations'
+          t('cropRecommendation.getRecommendations')
         )}
       </button>
     </form>

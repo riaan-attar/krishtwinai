@@ -550,6 +550,40 @@ const translations = {
     'disease.healthy.treatment2': 'Continue regular care and monitoring',
     'disease.healthy.prevention1': 'Maintain proper watering schedule',
     'disease.healthy.prevention2': 'Ensure adequate sunlight and nutrients',
+    
+    // Form Options
+    'soil.black': 'Black Soil (Regur)',
+    'soil.red': 'Red Soil',
+    'soil.alluvial': 'Alluvial Soil',
+    'soil.laterite': 'Laterite Soil',
+    'soil.sandy': 'Sandy Soil',
+    'soil.clay': 'Clay Soil',
+    'soil.loamy': 'Loamy Soil',
+    
+    'season.kharif': 'Kharif (Monsoon)',
+    'season.rabi': 'Rabi (Winter)',
+    'season.zaid': 'Zaid (Summer)',
+    'season.yearRound': 'Year Round',
+    
+    'water.abundant': 'Abundant (Irrigated)',
+    'water.moderate': 'Moderate (Partial Irrigation)',
+    'water.limited': 'Limited (Rain-fed)',
+    'water.scarce': 'Scarce (Drought-prone)',
+    
+    'experience.beginner': 'Beginner (0-2 years)',
+    'experience.intermediate': 'Intermediate (3-10 years)',
+    'experience.experienced': 'Experienced (10+ years)',
+    
+    'crop.rice': 'Rice',
+    'crop.wheat': 'Wheat',
+    'crop.cotton': 'Cotton',
+    'crop.soybean': 'Soybean',
+    'crop.sugarcane': 'Sugarcane',
+    'crop.maize': 'Maize',
+    'crop.tur': 'Tur',
+    'crop.gram': 'Gram',
+    'crop.groundnut': 'Groundnut',
+    'crop.sunflower': 'Sunflower',
   },
   hi: {
     // Navigation & Sidebar
@@ -1088,6 +1122,40 @@ const translations = {
     'disease.healthy.treatment2': 'नियमित देखभाल और निगरानी जारी रखें',
     'disease.healthy.prevention1': 'उचित पानी का कार्यक्रम बनाए रखें',
     'disease.healthy.prevention2': 'पर्याप्त धूप और पोषक तत्व सुनिश्चित करें',
+    
+    // Form Options
+    'soil.black': 'काली मिट्टी (रेंगुर)',
+    'soil.red': 'लाल मिट्टी',
+    'soil.alluvial': 'जलोढ़ मिट्टी',
+    'soil.laterite': 'लेटराइट मिट्टी',
+    'soil.sandy': 'बलुई मिट्टी',
+    'soil.clay': 'चिकनी मिट्टी',
+    'soil.loamy': 'दोमट मिट्टी',
+    
+    'season.kharif': 'खरीफ (मानसून)',
+    'season.rabi': 'रबी (सर्दी)',
+    'season.zaid': 'जायद (गर्मी)',
+    'season.yearRound': 'पूरा साल',
+    
+    'water.abundant': 'प्रचुर (सिंचित)',
+    'water.moderate': 'मध्यम (आंशिक सिंचित)',
+    'water.limited': 'सीमित (वर्षा आधारित)',
+    'water.scarce': 'दुर्लभ (सूखाग्रस्त)',
+    
+    'experience.beginner': 'नौसिखिया (0-2 वर्ष)',
+    'experience.intermediate': 'मध्यवर्ती (3-10 वर्ष)',
+    'experience.experienced': 'अनुभवी (10+ वर्ष)',
+    
+    'crop.rice': 'चावल',
+    'crop.wheat': 'गेहूं',
+    'crop.cotton': 'कपास',
+    'crop.soybean': 'सोयाबीन',
+    'crop.sugarcane': 'गन्ना',
+    'crop.maize': 'मक्का',
+    'crop.tur': 'अरहर',
+    'crop.gram': 'चना',
+    'crop.groundnut': 'मूंगफली',
+    'crop.sunflower': 'सूरजमुखी',
   },
   mr: {
     // Navigation & Sidebar
@@ -1626,6 +1694,40 @@ const translations = {
     'disease.healthy.treatment2': 'नियमित काळजी आणि देखरेख सुरू ठेवा',
     'disease.healthy.prevention1': 'पाण्याचे योग्य वेळापत्रक ठेवा',
     'disease.healthy.prevention2': 'पुरेशी सूर्यप्रकाश आणि पोषक तत्वे सुनिश्चित करा',
+    
+    // Form Options
+    'soil.black': 'काळी माती (रेगूर)',
+    'soil.red': 'लाल माती',
+    'soil.alluvial': 'गाळाची माती',
+    'soil.laterite': 'जांभी माती',
+    'soil.sandy': 'वाळूमय माती',
+    'soil.clay': 'चिकणमाती',
+    'soil.loamy': 'घट्ट माती',
+    
+    'season.kharif': 'खरीप (पावसाळा)',
+    'season.rabi': 'रब्बी (हिवाळा)',
+    'season.zaid': 'उन्हाळी',
+    'season.yearRound': 'वर्षभर',
+    
+    'water.abundant': 'विपुल (बागायती)',
+    'water.moderate': 'मध्यम (अंशतः बागायती)',
+    'water.limited': 'मर्यादित (जिरायती)',
+    'water.scarce': 'दुर्मिळ (दुष्काळग्रस्त)',
+    
+    'experience.beginner': 'नवशिके (0-2 वर्षे)',
+    'experience.intermediate': 'मध्यम (3-10 वर्षे)',
+    'experience.experienced': 'अनुभवी (10+ वर्षे)',
+    
+    'crop.rice': 'तांदूळ',
+    'crop.wheat': 'गहू',
+    'crop.cotton': 'कापूस',
+    'crop.soybean': 'सोयाबीन',
+    'crop.sugarcane': 'ऊस',
+    'crop.maize': 'मका',
+    'crop.tur': 'तूर',
+    'crop.gram': 'हरभरा',
+    'crop.groundnut': 'भुईमूग',
+    'crop.sunflower': 'सूर्यफूल',
   }
 }
 
