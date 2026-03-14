@@ -15,7 +15,8 @@ from PIL import Image
 import torch.nn.functional as F
 
 app = Flask(__name__)
-CORS(app)
+# Enable CORS for all routes (necessary for frontend integration like Vercel)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # --- PRICE PREDICTION GLOBALS ---
 model = None
@@ -200,4 +201,5 @@ def predict_disease():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port, debug=False)
