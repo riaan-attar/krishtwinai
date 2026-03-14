@@ -93,7 +93,7 @@ const WeatherAdviceForm = ({ onSubmit, loading }: WeatherAdviceFormProps) => {
       
       <div className="space-y-4">
         {/* Location Method Selection */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <label className="flex items-center gap-2">
             <input
               type="radio"

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { LanguageProvider } from './context/LanguageContext'
@@ -20,12 +20,24 @@ import Profile from './pages/Profile'
 import Marketplace from './pages/Marketplace'
 import ProduceListings from './pages/ProduceListings'
 import Login from './pages/Login'
-import SignUp from './pages/SignUp'
+import SignUp from './pages/Signup'
 import Landing from './pages/Landing'
 import { useThemeClasses } from './hooks/useThemeClasses'
 
 function AppContent() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
   const themeClasses = useThemeClasses()
 
   return (
@@ -37,12 +49,19 @@ function AppContent() {
         <Route
           path="/*"
           element={
-            <ProtectedRoute>
-              <div className={`flex min-h-screen ${themeClasses.bg} transition-colors`}>
-                <Sidebar isOpen={isSidebarOpen} />
-                <div className={`flex-1 ${isSidebarOpen ? 'ml-64' : 'ml-0'} transition-all duration-300`}>
+          <ProtectedRoute>
+              <div className={`flex min-h-screen ${themeClasses.bg} transition-colors relative`}>
+                {/* Mobile overlay */}
+                {isSidebarOpen && (
+                  <div 
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity" 
+                    onClick={() => setIsSidebarOpen(false)}
+                  />
+                )}
+                <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+                <div className={`flex-1 w-full max-w-full ${isSidebarOpen ? 'md:ml-64' : 'ml-0'} transition-all duration-300`}>
                   <TopBar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
-                  <main className="p-8">
+                  <main className="p-4 md:p-8 overflow-x-hidden">
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/price-prediction" element={<PricePrediction />} />

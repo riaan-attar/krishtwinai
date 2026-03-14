@@ -19,9 +19,10 @@ import { useThemeClasses } from '../hooks/useThemeClasses'
 
 interface SidebarProps {
   isOpen: boolean
+  setIsOpen?: (isOpen: boolean) => void
 }
 
-const Sidebar = ({ isOpen }: SidebarProps) => {
+const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const location = useLocation()
   const navigate = useNavigate()
   const { signOut } = useAuth()
@@ -82,6 +83,11 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
               )}
               <Link
                 to={item.path}
+                onClick={() => {
+                  if (window.innerWidth < 768 && setIsOpen) {
+                    setIsOpen(false)
+                  }
+                }}
                 className={`flex items-center px-5 py-3 ${themeClasses.text.secondary} ${themeClasses.hover.bg} ${themeClasses.hover.text} transition-colors ${
                   isActive ? `${themeClasses.hover.bg} ${themeClasses.text.primary} border-l-3 border-green-500` : ''
                 }`}

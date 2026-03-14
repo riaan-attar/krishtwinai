@@ -107,9 +107,9 @@ const PricePrediction = () => {
 
       {/* Market Factors Section */}
       <div className="bg-gray-900 dark:bg-gray-950 rounded-xl p-6 border border-gray-800">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
           <h3 className="text-lg font-bold text-gray-300">{t('price.topMarketFactors')}</h3>
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <p className="text-gray-400 text-sm">{t('price.aiConfidence')}</p>
             <p className="text-4xl font-bold text-white">82%</p>
           </div>
