@@ -10,7 +10,8 @@ import {
   Package, 
   User, 
   LogOut,
-  Leaf
+  Leaf,
+  FileText
 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -45,6 +46,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     { icon: CloudSun, label: t('nav.weatherAdvice'), section: 'ai-tools', path: '/weather-advice' },
     { icon: AlertTriangle, label: t('nav.diseaseDetection'), section: 'ai-tools', path: '/disease-detection' },
     { icon: Landmark, label: t('nav.governmentSchemes'), section: 'ai-tools', path: '/government-schemes' },
+    { icon: FileText, label: t('nav.talkToPdf'), section: 'ai-tools', path: '/talk-to-pdf' },
     { icon: ShoppingCart, label: t('nav.marketplace'), section: 'platform', path: '/marketplace' },
     { icon: Users, label: t('nav.community'), section: 'platform', path: '/community' },
     { icon: Package, label: t('nav.orders'), section: 'platform', path: '/orders' },

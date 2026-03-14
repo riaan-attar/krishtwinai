@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { MapPin, Loader2, Droplets, Calendar, DollarSign } from 'lucide-react'
 import { CropRecommendationInput, LocationData, FarmData } from '../types/crops'
+import { reverseGeocode } from '../lib/weather'
 import { useLanguage } from '../context/LanguageContext'
 
 interface CropRecommendationFormProps {
@@ -63,19 +64,13 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
           
           // Try to get location details using reverse geocoding
           try {
-            const response = await fetch(
-              `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=demo&limit=1`
-            )
-            const data = await response.json()
-            if (data.results && data.results[0]) {
-              const result = data.results[0].components
+            const locationDetails = await reverseGeocode(latitude, longitude)
+            if (locationDetails.city || locationDetails.district || locationDetails.state) {
               setLocation(prev => ({
                 ...prev,
                 latitude,
                 longitude,
-                state: result.state,
-                district: result.county || result.district,
-                city: result.city || result.town || result.village
+                ...locationDetails
               }))
             }
           } catch (error) {
@@ -184,10 +179,11 @@ const CropRecommendationForm = ({ onSubmit, loading }: CropRecommendationFormPro
               {location.latitude && location.longitude && (
                 <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                   <p className="text-green-400 text-sm">
-                    <strong>{t('common.location')}:</strong> {location.city}, {location.district}, {location.state}
-                  </p>
-                  <p className="text-gray-400 text-xs">
-                    {t('common.coordinates')}: {location.latitude?.toFixed(4)}, {location.longitude?.toFixed(4)}
+                    <strong>{t('common.location')}:</strong> {
+                      [location.city, location.district, location.state].filter(Boolean).length > 0 
+                        ? [location.city, location.district, location.state].filter(Boolean).join(', ')
+                        : (locationLoading ? t('cropRecommendation.gettingLocation') : 'Location Details Not Found')
+                    }
                   </p>
                 </div>
               )}
