@@ -32,9 +32,11 @@ const TalkToPDF = () => {
     setExtracting(true)
     setError(null)
     try {
-      // Dynamically import pdfjs-dist to avoid SSR issues
+      // Import PDF.js and its worker correctly for Vite
       const pdfjsLib = await import('pdfjs-dist')
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+      const pdfWorker = await import('pdfjs-dist/build/pdf.worker.min.mjs?worker')
+      
+      pdfjsLib.GlobalWorkerOptions.workerPort = new pdfWorker.default()
 
       const arrayBuffer = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
@@ -89,7 +91,7 @@ const TalkToPDF = () => {
       if (!apiKey) throw new Error('Gemini API key not configured')
 
       const genAI = new GoogleGenerativeAI(apiKey)
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
       // Build conversation context
       const history = newMessages.slice(1, -1).map(m =>

@@ -238,7 +238,7 @@ export const getFarmingAdvice = async (weather: WeatherData): Promise<FarmingAdv
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const prompt = `
 You are an expert agricultural advisor for Indian farmers. Based on the following weather data, provide comprehensive farming advice in JSON format.
