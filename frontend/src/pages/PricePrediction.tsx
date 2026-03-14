@@ -34,7 +34,8 @@ const PricePrediction = () => {
         today_date: formattedDate
       };
 
-      const response = await fetch('http://localhost:5001/predict/price', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'
+      const response = await fetch(`${backendUrl}/predict/price`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
