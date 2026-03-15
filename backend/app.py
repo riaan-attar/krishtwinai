@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import joblib
+import xgboost
 import pandas as pd
 from datetime import timedelta
 
@@ -51,41 +52,43 @@ disease_preprocess = transforms.Compose([
     )
 ])
 
-def load_models():
-    """Load all necessary models at initialization time."""
-    global model, le_market, le_commodity, last_data, disease_model
-    # Get the directory of the current script
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    try:
-        model = joblib.load(os.path.join(base_dir, "crop_price_model.pkl"))
-        le_market = joblib.load(os.path.join(base_dir, "market_encoder.pkl"))
-        le_commodity = joblib.load(os.path.join(base_dir, "commodity_encoder.pkl"))
-        last_data = joblib.load(os.path.join(base_dir, "last_data.pkl"))
-        print("Price models loaded successfully.")
-    except Exception as e:
-        import traceback
-        print(f"Error loading price models: {e}")
-        traceback.print_exc()
+def get_price_models():
+    """Lazy load price models."""
+    global model, le_market, le_commodity, last_data
+    if model is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        try:
+            model = joblib.load(os.path.join(base_dir, "crop_price_model.pkl"))
+            le_market = joblib.load(os.path.join(base_dir, "market_encoder.pkl"))
+            le_commodity = joblib.load(os.path.join(base_dir, "commodity_encoder.pkl"))
+            last_data = joblib.load(os.path.join(base_dir, "last_data.pkl"))
+            print("Price models loaded successfully.")
+        except Exception as e:
+            import traceback
+            print(f"Error loading price models: {e}")
+            traceback.print_exc()
+    return model, le_market, le_commodity, last_data
 
-    try:
-        disease_model = resnet50(weights=None)
-        disease_model.fc = nn.Sequential(
-            nn.Linear(disease_model.fc.in_features, len(class_labels))
-        )
-        disease_model.load_state_dict(
-            torch.load(os.path.join(base_dir, "01_plant_diseases_classification_pytorch_rn50.pth"), map_location="cpu")
-        )
-        disease_model.eval()
-        print("Disease model loaded successfully.")
-    except Exception as e:
-        import traceback
-        print(f"Error loading disease models: {e}")
-        traceback.print_exc()
-
-# Load models before handling any requests
-with app.app_context():
-    load_models()
+def get_disease_model():
+    """Lazy load disease model."""
+    global disease_model
+    if disease_model is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        try:
+            disease_model = resnet50(weights=None)
+            disease_model.fc = nn.Sequential(
+                nn.Linear(disease_model.fc.in_features, len(class_labels))
+            )
+            disease_model.load_state_dict(
+                torch.load(os.path.join(base_dir, "01_plant_diseases_classification_pytorch_rn50.pth"), map_location="cpu")
+            )
+            disease_model.eval()
+            print("Disease model loaded successfully.")
+        except Exception as e:
+            import traceback
+            print(f"Error loading disease models: {e}")
+            traceback.print_exc()
+    return disease_model
 
 
 @app.route('/predict/price', methods=['POST'])
@@ -101,24 +104,26 @@ def predict_price():
     if not market or not commodity or not today_date:
         return jsonify({"error": "Missing required fields: 'market', 'commodity', 'today_date'"}), 400
 
-    if model is None or le_market is None or le_commodity is None or last_data is None:
+    # Lazy load models
+    m, le_m, le_c, ld = get_price_models()
+    if m is None or le_m is None or le_c is None or ld is None:
         return jsonify({"error": "Models are not loaded correctly"}), 500
 
-    if market not in le_market.classes_:
+    if market not in le_m.classes_:
         return jsonify({"error": f"Market '{market}' not found"}), 400
 
-    if commodity not in le_commodity.classes_:
+    if commodity not in le_c.classes_:
         return jsonify({"error": f"Commodity '{commodity}' not found"}), 400
 
     future_preds = []
 
     # encode inputs
-    market_enc = le_market.transform([market])[0]
-    commodity_enc = le_commodity.transform([commodity])[0]
+    market_enc = le_m.transform([market])[0]
+    commodity_enc = le_c.transform([commodity])[0]
 
     # get last known lag values
-    temp = last_data[(last_data["Market Name"] == market_enc) & 
-                     (last_data["Commodity"] == commodity_enc)].sort_values("Price Date")
+    temp = ld[(ld["Market Name"] == market_enc) & 
+                     (ld["Commodity"] == commodity_enc)].sort_values("Price Date")
     
     if temp.empty:
         return jsonify({"error": "No historical data found for this market and commodity combination"}), 404
@@ -146,7 +151,7 @@ def predict_price():
             "lag3": lag3
         }])
 
-        pred = model.predict(row)[0]
+        pred = m.predict(row)[0]
 
         future_preds.append({
             "date": str(future_date.date()),
@@ -162,7 +167,8 @@ def predict_price():
 
 @app.route('/predict/disease', methods=['POST'])
 def predict_disease():
-    if disease_model is None:
+    d_model = get_disease_model()
+    if d_model is None:
         return jsonify({"error": "Disease model is not loaded correctly"}), 500
 
     if 'image' not in request.files:
