@@ -54,11 +54,14 @@ disease_preprocess = transforms.Compose([
 def load_models():
     """Load all necessary models at initialization time."""
     global model, le_market, le_commodity, last_data, disease_model
+    # Get the directory of the current script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
     try:
-        model = joblib.load("crop_price_model.pkl")
-        le_market = joblib.load("market_encoder.pkl")
-        le_commodity = joblib.load("commodity_encoder.pkl")
-        last_data = joblib.load("last_data.pkl")
+        model = joblib.load(os.path.join(base_dir, "crop_price_model.pkl"))
+        le_market = joblib.load(os.path.join(base_dir, "market_encoder.pkl"))
+        le_commodity = joblib.load(os.path.join(base_dir, "commodity_encoder.pkl"))
+        last_data = joblib.load(os.path.join(base_dir, "last_data.pkl"))
         print("Price models loaded successfully.")
     except Exception as e:
         print(f"Error loading price models: {e}")
@@ -69,7 +72,7 @@ def load_models():
             nn.Linear(disease_model.fc.in_features, len(class_labels))
         )
         disease_model.load_state_dict(
-            torch.load("01_plant_diseases_classification_pytorch_rn50.pth", map_location="cpu")
+            torch.load(os.path.join(base_dir, "01_plant_diseases_classification_pytorch_rn50.pth"), map_location="cpu")
         )
         disease_model.eval()
         print("Disease model loaded successfully.")
