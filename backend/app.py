@@ -1,5 +1,6 @@
 import os
 import io
+import gc
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -14,6 +15,9 @@ from torchvision.models import resnet50
 import torchvision.transforms as transforms
 from PIL import Image
 import torch.nn.functional as F
+
+# Limit torch to 1 thread to reduce memory overhead
+torch.set_num_threads(1)
 
 app = Flask(__name__)
 # Enable CORS for all routes (necessary for frontend integration like Vercel)
@@ -63,6 +67,7 @@ def get_price_models():
             le_commodity = joblib.load(os.path.join(base_dir, "commodity_encoder.pkl"))
             last_data = joblib.load(os.path.join(base_dir, "last_data.pkl"))
             print("Price models loaded successfully.")
+            gc.collect()
         except Exception as e:
             import traceback
             print(f"Error loading price models: {e}")
@@ -84,6 +89,7 @@ def get_disease_model():
             )
             disease_model.eval()
             print("Disease model loaded successfully.")
+            gc.collect()
         except Exception as e:
             import traceback
             print(f"Error loading disease models: {e}")
@@ -189,7 +195,7 @@ def predict_disease():
         image_tensor = disease_preprocess(image).unsqueeze(0)
 
         with torch.no_grad():
-            outputs = disease_model(image_tensor)
+            outputs = d_model(image_tensor)
             probs = F.softmax(outputs, dim=1)
             confidence, predicted = torch.max(probs, 1)
 
@@ -204,6 +210,10 @@ def predict_disease():
 
         confidence_val = round(confidence.item() * 100, 2)
 
+        # Explicitly clean up memory
+        del image_bytes, image, image_tensor, outputs, probs
+        gc.collect()
+
         return jsonify({
             "plant": plant,
             "disease": disease,
@@ -211,6 +221,7 @@ def predict_disease():
             "full_label": predicted_label
         }), 200
     except Exception as e:
+        gc.collect()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
