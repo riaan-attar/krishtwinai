@@ -64,7 +64,9 @@ def load_models():
         last_data = joblib.load(os.path.join(base_dir, "last_data.pkl"))
         print("Price models loaded successfully.")
     except Exception as e:
+        import traceback
         print(f"Error loading price models: {e}")
+        traceback.print_exc()
 
     try:
         disease_model = resnet50(weights=None)
@@ -77,7 +79,9 @@ def load_models():
         disease_model.eval()
         print("Disease model loaded successfully.")
     except Exception as e:
+        import traceback
         print(f"Error loading disease models: {e}")
+        traceback.print_exc()
 
 # Load models before handling any requests
 with app.app_context():
